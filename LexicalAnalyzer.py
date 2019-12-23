@@ -105,6 +105,9 @@ class LexicalAnalyzer():
                     if judge[0]: # int
                         temp = Token(label, word, judge[1], -1,judge[2])
                         self.tokens.append(temp)
+                        temp = Symbol(number, word, judge[1], judge[2], label)
+                        if self.__add_symbol(temp):
+                            number += 1
                         label += 1
                         continue
 
@@ -112,6 +115,9 @@ class LexicalAnalyzer():
                     if judge[0]: # real
                         temp = Token(label, word, judge[1], -1, judge[2])
                         self.tokens.append(temp)
+                        temp = Symbol(number, word, judge[1], judge[2], label)
+                        if self.__add_symbol(temp):
+                            number += 1
                         label += 1
                         continue
                     raise RuntimeError('Either int nor real !', line, word)
@@ -160,7 +166,7 @@ class LexicalAnalyzer():
         print(table)
 
     def show_symbols(self):
-        print(f'共检测到 用户自定义标识符 共 {len(self.symbols)} 个')
+        print(f'共检测到 用户自定义标识符和常数 共 {len(self.symbols)} 个')
         table = PrettyTable(['number', 'name', 'code', 'type', 'Token-labels'])
         for symbol in self.symbols:
             table.add_row([symbol.number, symbol.name, symbol.code, symbol.type, symbol.token_labels])
