@@ -172,15 +172,28 @@ class Equ():
 
 
 class Grammar():
-    state_grammar = [
-        'A → # S #',
-        'S → var D | nil',
-        'D → L : K ; | L : K ; D',
-        'L → i , L | i',
-        'K → integer | bool | real',
-    ]
-    terminals = ['#', 'var', ':', ';', 'i', ',', 'integer', 'bool', 'real']
-    v_terminals = ['A', 'S', 'D', 'L', 'K']
+
+    def __init__(self, state_grammar=None, terminals=None, v_terminals=None):
+        if state_grammar:
+            self.state_grammar = state_grammar
+        else:
+            self.state_grammar = [
+                'A → # S #',
+                'S → var D | nil',
+                'D → L : K ; | L : K ; D',
+                'L → i , L | i',
+                'K → integer | bool | real',
+            ]
+        if terminals:
+            self.terminals = terminals
+        else:
+            self.terminals = ['#', 'var', ':', ';', 'i', ',', 'integer', 'bool', 'real']
+        if v_terminals:
+            self.v_terminals = v_terminals
+        else:
+            self.v_terminals = ['A', 'S', 'D', 'L', 'K']
+
+
     state_grammar_FIRSTVT = {}
     state_grammar_LASTVT = {}
     sentences = []
@@ -207,6 +220,7 @@ class Grammar():
 
 
     def transfer(self, src:str, dst:str, flag='firstvt'):
+        print('transfer', flag, src, dst)
         change = False
         if flag == 'firstvt':
             for ch in self.state_grammar_FIRSTVT[src]:
@@ -220,6 +234,7 @@ class Grammar():
                     change = True
         else:
             raise RuntimeError('Grammar transfer flag is invalid !', flag)
+        return change
 
 
     def set_state_grammer_FIRSTVT_LASTVT(self):
@@ -242,7 +257,7 @@ class Grammar():
                             if one[1] in self.terminals and one[1] not in self.state_grammar_FIRSTVT[line[0]]:
                                 self.state_grammar_FIRSTVT[line[0]].append(one[1])
                                 change_flag = True
-                        change_flag = (change_flag or self.transfer(ch, line[0], flag='firstvt'))
+                        change_flag = (change_flag or self.transfer(ch, line[0], flag='firstvt')) # A -> Q..
 
                     ch = one[-1] #lastvt
                     if ch in self.terminals and ch not in self.state_grammar_LASTVT[line[0]]: # A -> ...a
@@ -254,7 +269,7 @@ class Grammar():
                             if one[-2] in self.terminals and one[-2] not in self.state_grammar_LASTVT[line[0]]:
                                 self.state_grammar_LASTVT[line[0]].append(one[-2])
                                 change_flag = True
-                            change_flag = (change_flag or self.transfer(ch, line[0], flag='lastvt'))
+                        change_flag = (change_flag or self.transfer(ch, line[0], flag='lastvt')) # A -> ...Q
 
             if not change_flag:
                 break
