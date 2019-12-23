@@ -11,4 +11,6 @@ if __name__ == '__main__':
 
     g = Grammar()
     g.set_state_grammer_FIRSTVT_LASTVT()
+    g.set_state_grammer_priority_table()
+    g.show_all()
 

@@ -1,6 +1,13 @@
+from prettytable import PrettyTable
+
+
 define_false = (False, -2, 'unknown')
 define_word_max_length = 10
 
+class PriorityTable():
+    def __init__(self):
+        self.terminal_index = {}
+        self.value_table = []
 
 class Token():
 
@@ -172,11 +179,12 @@ class Grammar():
         'L → i , L | i',
         'K → integer | bool | real',
     ]
-    terminals = ['#', ':', ';', 'i', ',', 'integer', 'bool', 'real', 'var']
+    terminals = ['#', 'var', ':', ';', 'i', ',', 'integer', 'bool', 'real']
     v_terminals = ['A', 'S', 'D', 'L', 'K']
     state_grammar_FIRSTVT = {}
     state_grammar_LASTVT = {}
     sentences = []
+    priority_table = PriorityTable() # 2 dims
     '''
     sentences = [
                     ['S ', [' var D ', ' nil']],
@@ -186,7 +194,7 @@ class Grammar():
                 ]
     '''
 
-    def get_sentences(self):
+    def set_sentences(self):
         for line in self.state_grammar:
             sentence = line.split('→')
             sentence[0] = sentence[0].strip()
@@ -216,7 +224,7 @@ class Grammar():
 
     def set_state_grammer_FIRSTVT_LASTVT(self):
         if not self.sentences:
-            self.get_sentences()
+            self.set_sentences()
         if (not self.state_grammar_FIRSTVT) or (not self.state_grammar_LASTVT):
             for v in self.v_terminals:
                 self.state_grammar_FIRSTVT[v] = []
@@ -249,12 +257,88 @@ class Grammar():
                             change_flag = (change_flag or self.transfer(ch, line[0], flag='lastvt'))
 
             if not change_flag:
-                print(self.state_grammar_FIRSTVT)
-                print()
-                print(self.state_grammar_LASTVT)
                 break
 
+    def set_state_grammer_priority_table(self):
+        if not (self.state_grammar_FIRSTVT and self.state_grammar_LASTVT):
+            self.set_state_grammer_FIRSTVT_LASTVT()
 
+        terminals_num = len(self.terminals)
+        for i, t in enumerate(self.terminals): # init priority table
+            self.priority_table.terminal_index[t] = i
+            self.priority_table.value_table.append([' ' for _ in range(terminals_num)])
+
+        for line in self.sentences:
+            left = line[0]
+            right = line[1]
+            for one in right: # one=每一个候选式
+                one_len = len(one)
+                for i in range(one_len): # 遍历候选式中的每个符号
+                    if one[i] in self.terminals: # one[i] is terminal
+                        if i+1 < one_len and one[i+1] in self.terminals: # one[i] = one[i+1]
+                            row = self.priority_table.terminal_index[one[i]]
+                            col = self.priority_table.terminal_index[one[i+1]]
+                            self.priority_table.value_table[row][col] = '='
+
+                        if i+2 < one_len and one[i+1] in self.v_terminals and one[i+2] in self.terminals: # one[i] = one[i+2]
+                            row = self.priority_table.terminal_index[one[i]]
+                            col = self.priority_table.terminal_index[one[i+2]]
+                            self.priority_table.value_table[row][col] = '='
+
+                        if i+1 < one_len and one[i+1] in self.v_terminals: # ...aP... a < FIRSTVT(p)
+                            row = self.priority_table.terminal_index[one[i]]
+                            for first in self.state_grammar_FIRSTVT[one[i+1]]:
+                                col = self.priority_table.terminal_index[first]
+                                self.priority_table.value_table[row][col] = '<'
+
+                    elif one[i] in self.v_terminals: # one[i] is von terminals
+                        if i+1 < one_len and one[i+1] in self.terminals: # ...pa.... LASTVT(P) > a
+                            col = self.priority_table.terminal_index[one[i+1]]
+                            for last in self.state_grammar_LASTVT[one[i]]:
+                                row = self.priority_table.terminal_index[last]
+                                self.priority_table.value_table[row][col] = '>'
+
+
+
+
+
+    def show_FIRSTVT(self):
+        print('state_grammer的FIRSTVT集合如下所示')
+        if self.state_grammar_FIRSTVT:
+            table = PrettyTable(['VT', 'FIRSTVT-SET'])
+            for key in self.state_grammar_FIRSTVT.keys():
+                table.add_row([key, self.state_grammar_FIRSTVT[key]])
+
+            print(table)
+
+    def show_LASTVT(self):
+        print('state_grammer的LASTVT集合如下所示')
+        if self.state_grammar_LASTVT:
+            table = PrettyTable(['VT', 'LASTVT-SET'])
+            for key in self.state_grammar_LASTVT.keys():
+                table.add_row([key, self.state_grammar_LASTVT[key]])
+
+            print(table)
+
+
+    def show_priority_table(self):
+        print('state_grammer的算符优先关系表如下')
+        title = self.terminals.copy()
+        title.insert(0, ' ')
+        table = PrettyTable(title)
+        for col, t in zip(self.priority_table.value_table, self.terminals):
+            col.insert(0, t)
+            table.add_row(col)
+        print(table)
+
+
+    def show_all(self):
+        self.show_FIRSTVT()
+        print()
+        self.show_LASTVT()
+        print()
+        self.show_priority_table()
+        print()
 
 
 
