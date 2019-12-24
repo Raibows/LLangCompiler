@@ -1,11 +1,11 @@
 from LexicalAnalyzer import LexicalAnalyzer
-from Struct import Grammar
+from Grammar import OperatorPrecedenceGrammar
 
 
 if __name__ == '__main__':
-    # le = LexicalAnalyzer()
-    # le.formatter()
-    # le.scanner()
+    le = LexicalAnalyzer()
+    le.formatter()
+    le.scanner()
     # le.show_all()
     state_grammar = [
         'A → # S #',
@@ -17,9 +17,9 @@ if __name__ == '__main__':
     terminals = ['#', '(', ')', ';', 'i']
     v_terminals = ['A', 'S', 'D', 'R', 'P']
 
-    g = Grammar(state_grammar, terminals, v_terminals)
-    g.set_state_grammer_FIRSTVT_LASTVT()
-    g.set_state_grammer_priority_table()
+    g = OperatorPrecedenceGrammar()
+    g.set_grammar_FIRSTVT_LASTVT()
+    g.set_grammar_priority_table()
     g.show_all()
-    print(g.sentences)
+    g.reduction()
 
