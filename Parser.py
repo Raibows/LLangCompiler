@@ -1,5 +1,5 @@
 from prettytable import PrettyTable
-from Struct import PriorityTable, Equ, Token, Symbol
+from Struct import PriorityTable, Equ, Token, Symbol, Code
 
 
 
@@ -70,7 +70,7 @@ class OperatorPrecedenceGrammar():
         return index
 
 
-    def set_sentences(self):
+    def __set_sentences(self):
         for line in self.grammar:
             sentence = line.split('→')
             sentence[0] = sentence[0].strip()
@@ -82,7 +82,7 @@ class OperatorPrecedenceGrammar():
         # print(self.sentences)
 
 
-    def transfer(self, src:str, dst:str, flag='firstvt'):
+    def __transfer(self, src:str, dst:str, flag='firstvt'):
         # print('transfer', flag, src, dst)
         change = False
         if flag == 'firstvt':
@@ -101,7 +101,7 @@ class OperatorPrecedenceGrammar():
 
     def set_grammar_FIRSTVT_LASTVT(self):
         if not self.sentences:
-            self.set_sentences()
+            self.__set_sentences()
         if (not self.grammar_FIRSTVT) or (not self.grammar_LASTVT):
             for v in self.v_terminals:
                 self.grammar_FIRSTVT[v] = []
@@ -119,7 +119,7 @@ class OperatorPrecedenceGrammar():
                             if one[1] in self.terminals and one[1] not in self.grammar_FIRSTVT[line[0]]:
                                 self.grammar_FIRSTVT[line[0]].append(one[1])
                                 change_flag = True
-                        change_flag = (change_flag or self.transfer(ch, line[0], flag='firstvt')) # A -> Q..
+                        change_flag = (change_flag or self.__transfer(ch, line[0], flag='firstvt')) # A -> Q..
 
                     ch = one[-1] #lastvt
                     if ch in self.terminals and ch not in self.grammar_LASTVT[line[0]]: # A -> ...a
@@ -131,7 +131,7 @@ class OperatorPrecedenceGrammar():
                             if one[-2] in self.terminals and one[-2] not in self.grammar_LASTVT[line[0]]:
                                 self.grammar_LASTVT[line[0]].append(one[-2])
                                 change_flag = True
-                        change_flag = (change_flag or self.transfer(ch, line[0], flag='lastvt')) # A -> ...Q
+                        change_flag = (change_flag or self.__transfer(ch, line[0], flag='lastvt')) # A -> ...Q
 
             if not change_flag:
                 break
@@ -175,10 +175,10 @@ class OperatorPrecedenceGrammar():
                                 row = self.priority_table.terminal_index[last]
                                 self.priority_table.value_table[row][col] = '>'
 
-    def __is_symbol(self, name:str)->(bool, str):
+    def __is_symbol(self, name:str)->(bool, int):
         for symbol in self.symbols:
             if symbol.name == name:
-                return (True, symbol.type)
+                return (True, symbol.code)
         return (False, None)
 
     def __is_token(self, name:str)->(bool, str):
@@ -224,7 +224,7 @@ class OperatorPrecedenceGrammar():
                             j += 1
                         elif one[i] == 'i':
                             judge = self.__is_symbol(wait_reduct[j])
-                            if judge[0] and judge[1] == '标识符': # a\b\c\... == i
+                            if judge[0] and judge[1] == Code.TAG: # a\b\c\... == i
                                 # print(judge)
                                 i += 1
                                 j += 1
@@ -238,7 +238,7 @@ class OperatorPrecedenceGrammar():
                     return left
         raise RuntimeError('Error could not find a appropriate product! Wait reduction phrase is', wait_reduct)
 
-    def reduction(self):
+    def reduction(self, is_show=False):
         stack = []
         input_chars = self.__read_reduction_file()
         stack.append('#')
@@ -270,7 +270,7 @@ class OperatorPrecedenceGrammar():
                 elif self.priority_table.value_table[row][col] == '>': # 归约
                     while j > 0: # find the head of the most left terminal
                         temp = j
-                        if stack[j-1] not in self.terminals:
+                        if stack[j-1] not in self.terminals and not self.__is_symbol(stack[j-1])[0]:
                             j -= 2
                             if j < 0:
                                 raise RuntimeError('Error in find the head of the most left terminal! index is', j)
@@ -297,7 +297,8 @@ class OperatorPrecedenceGrammar():
             raise RuntimeError('Error, input_chars is empty, but stack is invalid, stack is', stack)
         print('归约完成，归约结果为', stack[top])
         table.add_row([step, stack, input_chars[cursor:]])
-        print(table)
+        if is_show:
+            print(table)
 
 
 

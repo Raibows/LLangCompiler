@@ -1,13 +1,12 @@
-from LexicalAnalyzer import LexicalAnalyzer
+from LexAnalyzer import Lexer
 from Parser import OperatorPrecedenceGrammar
 
 
 if __name__ == '__main__':
-    le = LexicalAnalyzer()
-    le.formatter()
+    le = Lexer()
     le.scanner()
     le.show_all()
-    le.output_target_dir()
+    le.output_formatted_file()
     state_grammar = [
         'L → S | S ; L',
         'S → i := E',
@@ -19,6 +18,6 @@ if __name__ == '__main__':
     g = OperatorPrecedenceGrammar(symbols=le.get_symbols())
     g.set_grammar_FIRSTVT_LASTVT()
     g.set_grammar_priority_table()
-    g.show_all()
+    # g.show_all()
     g.reduction()
 

@@ -5,7 +5,7 @@ from prettytable import PrettyTable
 
 
 
-class LexicalAnalyzer():
+class Lexer():
     def __init__(self):
         self.LLang_path = r'./test.LLang'
         self.target_token_path = ''
@@ -31,7 +31,7 @@ class LexicalAnalyzer():
         self.symbols.append(symbol)
         return True
 
-    def correct_real_int(self, wrong:str)->str:
+    def __correct_real_int(self, wrong:str)->str:
         dot = False
         right = ''
         for l in wrong:
@@ -50,7 +50,7 @@ class LexicalAnalyzer():
         return right
 
 
-    def formatter(self):
+    def __formatter(self):
         with open(self.LLang_path, 'r', encoding='UTF-8') as temp:
             self.origin_file = temp.readlines()
             for i in range(len(self.origin_file)):
@@ -65,9 +65,9 @@ class LexicalAnalyzer():
                 # self.origin_file[i] = self.origin_file[i].replace(' ', '')
 
     def scanner(self):
+        self.__formatter()
         if not self.origin_file:
             raise RuntimeError('origin_file is NULL')
-
         label = 0
         number = 0
         un_index = 0
@@ -106,7 +106,7 @@ class LexicalAnalyzer():
                         j += 1
                     word = line[i:j]
                     i = j
-                    word = self.correct_real_int(word)
+                    word = self.__correct_real_int(word)
 
                     judge = self.coder.is_INT(word)
                     if judge[0]: # int
@@ -164,7 +164,7 @@ class LexicalAnalyzer():
                     un_index += 1
                 i += 1
 
-    def output_target_dir(self):
+    def output_formatted_file(self):
         file = []
         i = 0
         while i < len(self.tokens):
