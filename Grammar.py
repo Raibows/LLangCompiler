@@ -2,7 +2,8 @@ from Struct import *
 
 
 class Grammar():
-    def __init__(self, production:[], terminals:[], v_terminals:[]):
+    def __init__(self, production:[], terminals:[], v_terminals:[], grammar_name:str):
+        self.grammar_name = grammar_name
         self.production = production
         self.terminals = terminals
         self.v_terminals = v_terminals
@@ -26,12 +27,14 @@ class Grammar():
 
     def __set_sentences(self):
         for line in self.production:
-            sentence = line.split('→')
+            sentence = line.split('->')
             sentence[0] = sentence[0].strip()
             sentence[1] = sentence[1].split('|')
             for i in range(len(sentence[1])):
                 sentence[1][i] = sentence[1][i].strip()
                 sentence[1][i] = sentence[1][i].split(' ')
+                for j in range(len(sentence[1][i])):
+                    sentence[1][i][j] = sentence[1][i][j].strip()
             self.sentences.append(sentence)
 
 
@@ -132,7 +135,7 @@ class Grammar():
 
 
     def show_FIRSTVT(self):
-        print('grammar的FIRSTVT集合如下所示')
+        print(self.grammar_name, '的FIRSTVT集合如下所示')
         if self.FIRSTVT:
             table = PrettyTable(['VT', 'FIRSTVT-SET'])
             for key in self.FIRSTVT.keys():
@@ -141,7 +144,7 @@ class Grammar():
             print(table)
 
     def show_LASTVT(self):
-        print('grammar的LASTVT集合如下所示')
+        print(self.grammar_name, '的LASTVT集合如下所示')
         if self.LASTVT:
             table = PrettyTable(['VT', 'LASTVT-SET'])
             for key in self.LASTVT.keys():
@@ -150,7 +153,7 @@ class Grammar():
             print(table)
 
     def show_priority_table(self):
-        print('grammar的算符优先关系表如下')
+        print(self.grammar_name, '的算符优先关系表如下')
         title = self.terminals.copy()
         title.insert(0, ' ')
         table = PrettyTable(title)
@@ -172,14 +175,27 @@ class Grammar():
 
 
 class StateGrammar():
+    '''
+    变量说明文法
+    '''
+    name = '变量说明文法 StateGrammar'
     production = [
-        'A → # S #',
-        'S → var D | nil',
-        'D → L : K ; | L : K ; S',
-        'L → i , L | i',
-        'K → integer | bool | real',
+        'A -> # S #',
+        'S -> var D | nil',
+        'D -> L : K ; | L : K ; S',
+        'L -> i , L | i',
+        'K -> integer | bool | real',
     ]
     terminals = ['#', 'var', ':', ';', 'i', ',', 'integer', 'bool', 'real']
     v_terminals = ['A', 'S', 'D', 'L', 'K']
     fake_start = 'A'
     real_start = 'S'
+
+class ExpressionGrammar():
+    '''
+    算式表达式
+    '''
+    name = '算式表达式 ExpressionGrammar'
+    production = [
+
+    ]

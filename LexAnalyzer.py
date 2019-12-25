@@ -185,6 +185,7 @@ class Lexer():
             for line in file:
                 writer.writelines(line)
                 writer.writelines('\n')
+        print('已经输出格式化LLang代码到', self.target_formatter_file_path)
 
 
 
