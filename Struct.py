@@ -15,18 +15,18 @@ class Token():
         self.label = label
         self.name = name
         self.code = code
-        self.addr = addr
+        self.addr = addr # key is -1 other is Symbol's number
         self.type = type
 
 
 class Symbol():
 
-    def __init__(self, number:int, name:str, code:int, type:str, token_label:int):
+    def __init__(self, number:int, name:str, code:int, type:str):
         self.number = number
         self.code = code
         self.name = name
         self.type = type
-        self.token_labels = [token_label]
+
 
 
 class Unrecognized():

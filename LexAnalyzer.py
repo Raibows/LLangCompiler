@@ -23,14 +23,6 @@ class Lexer():
     def get_tokens(self):
         return self.tokens
 
-    def __add_symbol(self, symbol:Symbol)->bool:
-        for one in self.symbols:
-            if one.name == symbol.name:
-                one.token_labels.append(symbol.token_labels[0])
-                return False
-        self.symbols.append(symbol)
-        return True
-
     def __correct_real_int(self, wrong:str)->str:
         dot = False
         right = ''
@@ -91,11 +83,11 @@ class Lexer():
 
                     judge = self.coder.is_TAG(word)
                     if judge[0]: # tag
-                        temp = Token(label, word, judge[1], -1, judge[2])
+                        temp = Symbol(number, word, judge[1], judge[2])
+                        self.symbols.append(temp)
+                        temp = Token(label, word, judge[1], number, judge[2])
                         self.tokens.append(temp)
-                        temp = Symbol(number, word, judge[1], judge[2], label)
-                        if self.__add_symbol(temp):
-                            number += 1
+                        number += 1
                         label += 1
                         continue
                     raise RuntimeError('Either tag nor key !', line, word)
@@ -110,26 +102,27 @@ class Lexer():
 
                     judge = self.coder.is_INT(word)
                     if judge[0]: # int
-                        temp = Token(label, word, judge[1], -1,judge[2])
+                        temp = Symbol(number, word, judge[1], judge[2])
+                        self.symbols.append(temp)
+                        temp = Token(label, word, judge[1], number, judge[2])
                         self.tokens.append(temp)
-                        temp = Symbol(number, word, judge[1], judge[2], label)
-                        if self.__add_symbol(temp):
-                            number += 1
+                        number += 1
                         label += 1
                         continue
 
                     judge = self.coder.is_REAL(word)
                     if judge[0]: # real
-                        temp = Token(label, word, judge[1], -1, judge[2])
+                        temp = Symbol(number, word, judge[1], judge[2])
+                        self.symbols.append(temp)
+                        temp = Token(label, word, judge[1], number, judge[2])
                         self.tokens.append(temp)
-                        temp = Symbol(number, word, judge[1], judge[2], label)
-                        if self.__add_symbol(temp):
-                            number += 1
+                        number += 1
                         label += 1
                         continue
                     raise RuntimeError('Either int nor real !', line, word)
 
                 judge = self.coder.is_bounder(line[i])
+
                 if judge[0]: # bounder
                     if (i+1) < len(line) and self.coder.is_bounder(line[i+1])[0]:
                         raise RuntimeError('Duplicate bounder', line, line[i], line[i+1])
@@ -190,17 +183,17 @@ class Lexer():
 
 
     def show_tokens(self):
-        table = PrettyTable(['label', 'name', 'code', 'type'])
+        table = PrettyTable(['label', 'name', 'code', 'addr', 'type'])
         print(f'共检测到 关键字、标识符、定界符 共 {len(self.tokens)} 个')
         for token in self.tokens:
-            table.add_row([token.label, token.name, token.code, token.type])
+            table.add_row([token.label, token.name, token.code, token.addr, token.type])
         print(table)
 
     def show_symbols(self):
         print(f'共检测到 用户自定义标识符和常数 共 {len(self.symbols)} 个')
-        table = PrettyTable(['number', 'name', 'code', 'type', 'Token-labels'])
+        table = PrettyTable(['number', 'name', 'code', 'type'])
         for symbol in self.symbols:
-            table.add_row([symbol.number, symbol.name, symbol.code, symbol.type, symbol.token_labels])
+            table.add_row([symbol.number, symbol.name, symbol.code, symbol.type])
         print(table)
 
     def show_unrecognized(self):
