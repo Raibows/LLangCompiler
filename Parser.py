@@ -1,5 +1,5 @@
 from prettytable import PrettyTable
-from Struct import PriorityTable
+from Struct import PriorityTable, Equ, Token, Symbol
 
 
 
@@ -9,12 +9,13 @@ from Struct import PriorityTable
 
 
 class OperatorPrecedenceGrammar():
-    def __init__(self, grammar=None, terminals=None, v_terminals=None, reduction_file_path:str=None):
+    def __init__(self, grammar=None, terminals=None, v_terminals=None, reduction_file_path:str=None, tokens:[Token]=None, symbols:[Symbol]=None):
         if grammar:
             self.grammar = grammar
         else:
             self.grammar = [
                 'A → # S #',
+                'B → S ; S',
                 'S → var D | nil',
                 'D → L : K ; | L : K ; D',
                 'L → i , L | i',
@@ -27,12 +28,22 @@ class OperatorPrecedenceGrammar():
         if v_terminals:
             self.v_terminals = v_terminals
         else:
-            self.v_terminals = ['A', 'S', 'D', 'L', 'K']
+            self.v_terminals = ['A', 'S', 'D', 'L', 'K', 'B']
 
         if reduction_file_path:
             self.reduction_file_path = reduction_file_path
         else:
             self.reduction_file_path = './test.reduct'
+
+        if tokens:
+            self.tokens = tokens
+        else:
+            self.tokens = []
+
+        if symbols:
+            self.symbols = symbols
+        else:
+            self.symbols = []
 
         self.grammar_FIRSTVT = {}
         self.grammar_LASTVT = {}
@@ -46,6 +57,17 @@ class OperatorPrecedenceGrammar():
                         ['K ', [' integer ', ' bool ', ' real']],
                     ]
         '''
+
+
+    def __get_priority_table_index(self, name:str)->int:
+        if self.__is_symbol(name)[0]:
+            index = self.priority_table.terminal_index['i']
+        elif name in self.terminals:
+            index = self.priority_table.terminal_index[name]
+        else:
+            raise RuntimeError('Error could not get index of priority_table', name)
+        # print('name, index', name, index)
+        return index
 
 
     def set_sentences(self):
@@ -153,6 +175,17 @@ class OperatorPrecedenceGrammar():
                                 row = self.priority_table.terminal_index[last]
                                 self.priority_table.value_table[row][col] = '>'
 
+    def __is_symbol(self, name:str)->(bool, str):
+        for symbol in self.symbols:
+            if symbol.name == name:
+                return (True, symbol.type)
+        return (False, None)
+
+    def __is_token(self, name:str)->(bool, str):
+        for token in self.tokens:
+            if token.name == name:
+                return (True, token.type)
+        return (False, None)
 
     def __read_reduction_file(self):
         print('待算符优先文法归约文件为', self.reduction_file_path)
@@ -166,7 +199,7 @@ class OperatorPrecedenceGrammar():
             line = line.strip(' ')
             line = line.split(' ')
             for word in line:
-                if word not in self.terminals and word not in self.v_terminals:
+                if word not in self.terminals and word not in self.v_terminals and not self.__is_symbol(word)[0]:
                     raise RuntimeError('Error reduction file has unknown chars!')
                 file.append(word)
         return file
@@ -189,6 +222,14 @@ class OperatorPrecedenceGrammar():
                         if wait_reduct[j] == one[i]:
                             i += 1
                             j += 1
+                        elif one[i] == 'i':
+                            judge = self.__is_symbol(wait_reduct[j])
+                            if judge[0] and judge[1] == '标识符': # a\b\c\... == i
+                                # print(judge)
+                                i += 1
+                                j += 1
+                            else:
+                                break
                         else:
                             break
                     else:
@@ -209,14 +250,14 @@ class OperatorPrecedenceGrammar():
         # while input_chars[cursor] != '#':
         while len(stack) != 2 or stack[1] not in self.v_terminals:
             step += 1
-            table.add_row([step, stack, input_chars[cursor:]])
-            if stack[top] not in self.terminals:
+            table.add_row([step, stack.copy(), input_chars[cursor:]])
+            if stack[top] not in self.terminals and not self.__is_symbol(stack[top])[0]:
                 j = top - 1
             else:
                 j = top
             while True:
-                row = self.priority_table.terminal_index[stack[j]]
-                col = self.priority_table.terminal_index[input_chars[cursor]]
+                row = self.__get_priority_table_index(stack[j])
+                col = self.__get_priority_table_index(input_chars[cursor])
                 # print(row, col)
                 # print(self.priority_table.value_table[row])
                 # print(self.priority_table.value_table[row][col])
@@ -232,11 +273,11 @@ class OperatorPrecedenceGrammar():
                         if stack[j-1] not in self.terminals:
                             j -= 2
                             if j < 0:
-                                raise RuntimeError('Error in fin the head of the most left terminal! index is', j)
+                                raise RuntimeError('Error in find the head of the most left terminal! index is', j)
                         else:
                             j -= 1
-                        row = self.priority_table.terminal_index[stack[j]]
-                        col = self.priority_table.terminal_index[stack[temp]]
+                        row = self.__get_priority_table_index(stack[j])
+                        col = self.__get_priority_table_index(stack[temp])
                         if self.priority_table.value_table[row][col] == '<':
                             break
                     # reduct from stack[j+1] to stack[top]
@@ -263,7 +304,7 @@ class OperatorPrecedenceGrammar():
 
 
     def show_FIRSTVT(self):
-        print('state_grammer的FIRSTVT集合如下所示')
+        print('grammar的FIRSTVT集合如下所示')
         if self.grammar_FIRSTVT:
             table = PrettyTable(['VT', 'FIRSTVT-SET'])
             for key in self.grammar_FIRSTVT.keys():
@@ -272,7 +313,7 @@ class OperatorPrecedenceGrammar():
             print(table)
 
     def show_LASTVT(self):
-        print('state_grammer的LASTVT集合如下所示')
+        print('grammar的LASTVT集合如下所示')
         if self.grammar_LASTVT:
             table = PrettyTable(['VT', 'LASTVT-SET'])
             for key in self.grammar_LASTVT.keys():
@@ -281,7 +322,7 @@ class OperatorPrecedenceGrammar():
             print(table)
 
     def show_priority_table(self):
-        print('state_grammer的算符优先关系表如下')
+        print('grammar的算符优先关系表如下')
         title = self.terminals.copy()
         title.insert(0, ' ')
         table = PrettyTable(title)
@@ -298,3 +339,9 @@ class OperatorPrecedenceGrammar():
         print()
         self.show_priority_table()
         print()
+
+
+
+class RecursiveDecline():
+    def __init__(self):
+        pass

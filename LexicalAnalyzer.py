@@ -6,15 +6,22 @@ from prettytable import PrettyTable
 
 
 class LexicalAnalyzer():
-    LLang_path = r'./test.LLang'
-    target_token_path = ''
-    target_word_table_path = ''
-    origin_file = []
-    coder = Code()
-    tokens = []
-    symbols = []
-    unrecognized = []
+    def __init__(self):
+        self.LLang_path = r'./test.LLang'
+        self.target_token_path = ''
+        self.target_word_table_path = ''
+        self.target_formatter_file_path = './rductLang.reduct'
+        self.origin_file = []
+        self.coder = Code()
+        self.tokens = []
+        self.symbols = []
+        self.unrecognized = []
 
+    def get_symbols(self)->[Symbol]:
+        return self.symbols
+
+    def get_tokens(self):
+        return self.tokens
 
     def __add_symbol(self, symbol:Symbol)->bool:
         for one in self.symbols:
@@ -39,7 +46,7 @@ class LexicalAnalyzer():
             if l.isalpha():
                 break
         if right != wrong:
-            print(f'Error real or int has been corrected from {wrong} to {right}')
+            print(f'Warning real or int has been corrected from {wrong} to {right}')
         return right
 
 
@@ -156,6 +163,29 @@ class LexicalAnalyzer():
                     self.unrecognized.append(Unrecognized(un_index, line, line[i], i))
                     un_index += 1
                 i += 1
+
+    def output_target_dir(self):
+        file = []
+        i = 0
+        while i < len(self.tokens):
+            line = []
+            if self.tokens[i].label < 2:
+                i += 1
+                continue
+            else:
+                while i < len(self.tokens):
+                    line.append(self.tokens[i].name)
+                    line.append(' ')
+                    if self.tokens[i].name == ';':
+                        i += 1
+                        break
+                    i += 1
+            file.append(line)
+        with open(self.target_formatter_file_path, 'w', encoding='utf-8') as writer:
+            for line in file:
+                writer.writelines(line)
+                writer.writelines('\n')
+
 
 
     def show_tokens(self):

@@ -1,1 +1,3 @@
-var i : integer ;
+var a : integer ;
+var b : bool ;
+var c : real ;

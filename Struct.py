@@ -161,14 +161,33 @@ class Code():
 
 
 class Equ():
-    def __init__(self, op_code:int, op_ip:int, src_name:str, src_ip:int, dst_name:str, dst_ip:int, result_ip:int):
-        self.op_code = op_code
-        self.op_ip = op_ip
-        self.src_name = src_name
-        self.src_ip = src_ip
-        self.dst_name = dst_name
-        self.dst_ip = dst_ip
-        self.result_ip = result_ip
+    def __init__(self, op:str, op1:str, op2:str, result:str):
+        self.op = op
+        self.op1 = op1
+        self.op2 = op2
+        self.result = result
+
+
+
+
+
+class TreeNode():
+    def __init__(self, name):
+        self.child = None
+        self.sibling = None
+        self.name = name
+        self.data = None
+
+    def set_child(self, child):
+        if not isinstance(child, TreeNode):
+            raise RuntimeError('Error in set child! child type must be TreeNode')
+        self.child = child
+
+    def set_sibling(self, sibling):
+        if not isinstance(sibling, TreeNode):
+            raise RuntimeError('Error in set sibling! sibling type must be TreeNode')
+        self.sibling = sibling
+
 
 
 
