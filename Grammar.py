@@ -135,28 +135,34 @@ class Grammar():
 
 
     def show_FIRSTVT(self):
-        print(self.grammar_name, '的FIRSTVT集合如下所示')
+        info = self.grammar_name + '的FIRSTVT集合如下所示'
         if self.FIRSTVT:
-            table = PrettyTable(['VT', 'FIRSTVT-SET'])
+            table = PrettyTable()
+            table.title = info
+            table.field_names = ['VT', 'FIRSTVT-SET']
             for key in self.FIRSTVT.keys():
                 table.add_row([key, self.FIRSTVT[key]])
 
             print(table)
 
     def show_LASTVT(self):
-        print(self.grammar_name, '的LASTVT集合如下所示')
+        info = self.grammar_name + '的LASTVT集合如下所示'
         if self.LASTVT:
-            table = PrettyTable(['VT', 'LASTVT-SET'])
+            table = PrettyTable()
+            table.title = info
+            table.field_names = ['VT', 'LASTVT-SET']
             for key in self.LASTVT.keys():
                 table.add_row([key, self.LASTVT[key]])
 
             print(table)
 
     def show_priority_table(self):
-        print(self.grammar_name, '的算符优先关系表如下')
-        title = self.terminals.copy()
-        title.insert(0, ' ')
-        table = PrettyTable(title)
+        info = self.grammar_name + '的算符优先关系表如下'
+        table = PrettyTable()
+        table.title = info
+        field = self.terminals.copy()
+        field.insert(0, ' ')
+        table.field_names =  field
         for col, t in zip(self.priority_table.value_table, self.terminals):
             temp = col.copy()
             temp.insert(0, t)
@@ -164,6 +170,7 @@ class Grammar():
         print(table)
 
     def show_all(self):
+        print()
         self.show_FIRSTVT()
         print()
         self.show_LASTVT()

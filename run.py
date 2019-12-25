@@ -14,7 +14,7 @@ if __name__ == '__main__':
     le.show_all()
     le.output_formatted_file()
     g = Grammar(StateGrammar.production, StateGrammar.terminals, StateGrammar.v_terminals, StateGrammar.name)
-    # g.show_all()
+    g.show_all()
     o = OperatorPrecedenceParser(g, le.get_symbols())
     o.reduction(False)
 

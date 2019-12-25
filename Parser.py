@@ -12,7 +12,7 @@ class OperatorPrecedenceParser():
         if reduction_file_path:
             self.reduction_file_path = reduction_file_path
         else:
-            self.reduction_file_path = './test.reduct'
+            self.reduction_file_path = 'static/test.reduct'
 
         self.tokens = tokens
         self.symbols = symbols
@@ -45,7 +45,7 @@ class OperatorPrecedenceParser():
         return (False, None)
 
     def __read_reduction_file(self):
-        print('待算符优先文法归约文件为', self.reduction_file_path)
+        print('Info 待算符优先文法归约文件为', self.reduction_file_path)
         with open(self.reduction_file_path, 'r', encoding='utf-8') as file:
             temp = file.readlines()
         file = []
@@ -103,7 +103,9 @@ class OperatorPrecedenceParser():
         cursor = 0
         top = 0 # stack_top
         step = 0
-        table = PrettyTable(['step', 'stack', 'input_chars'])
+        table = PrettyTable()
+        table.title = 'Reduction Process'
+        table.field_names = ['step', 'stack', 'input_chars']
         # while input_chars[cursor] != '#':
         while len(stack) != 2 or stack[1] not in self.grammar.v_terminals:
             step += 1
@@ -152,7 +154,7 @@ class OperatorPrecedenceParser():
                     raise RuntimeError('Error invalid reduction! stack, input_chars, top, cursor, row, col, relation', stack, input_chars, top, cursor, row, col, relation)
         if stack[top] not in self.grammar.v_terminals or len(stack) != 2:
             raise RuntimeError('Error, input_chars is empty, but stack is invalid, stack is', stack)
-        print('归约完成，归约结果为', stack[top])
+        print('Info 归约完成，归约结果为', stack[top])
         table.add_row([step, stack, input_chars[cursor:]])
         if is_show:
             print(table)

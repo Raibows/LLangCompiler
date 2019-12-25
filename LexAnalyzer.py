@@ -7,10 +7,10 @@ from prettytable import PrettyTable
 
 class Lexer():
     def __init__(self):
-        self.LLang_path = r'./test.LLang'
+        self.LLang_path = r'static/test.LLang'
         self.target_token_path = ''
         self.target_word_table_path = ''
-        self.target_formatter_file_path = './rductLang.reduct'
+        self.target_formatter_file_path = 'static/rductLang.reduct'
         self.origin_file = []
         self.coder = Code()
         self.tokens = []
@@ -20,7 +20,7 @@ class Lexer():
     def get_symbols(self)->[Symbol]:
         return self.symbols
 
-    def get_tokens(self):
+    def get_tokens(self)->[Token]:
         return self.tokens
 
     def __correct_real_int(self, wrong:str)->str:
@@ -41,7 +41,6 @@ class Lexer():
             print(f'Warning real or int has been corrected from {wrong} to {right}')
         return right
 
-
     def __formatter(self):
         with open(self.LLang_path, 'r', encoding='UTF-8') as temp:
             self.origin_file = temp.readlines()
@@ -57,6 +56,7 @@ class Lexer():
                 # self.origin_file[i] = self.origin_file[i].replace(' ', '')
 
     def scanner(self):
+        print('Info 正在词法分析', self.LLang_path)
         self.__formatter()
         if not self.origin_file:
             raise RuntimeError('origin_file is NULL')
@@ -178,32 +178,41 @@ class Lexer():
             for line in file:
                 writer.writelines(line)
                 writer.writelines('\n')
-        print('已经输出格式化LLang代码到', self.target_formatter_file_path)
-
+        print('Info 已经输出格式化LLang代码到', self.target_formatter_file_path)
 
 
     def show_tokens(self):
-        table = PrettyTable(['label', 'name', 'code', 'addr', 'type'])
-        print(f'共检测到 关键字、标识符、定界符 共 {len(self.tokens)} 个')
+        info = '   Token Table'
+        info = info + f'   共检测到 关键字、标识符、定界符 共 {len(self.tokens)} 个'
+        table = PrettyTable()
+        table.title = info
+        table.field_names = ['label', 'name', 'code', 'addr', 'type']
         for token in self.tokens:
             table.add_row([token.label, token.name, token.code, token.addr, token.type])
         print(table)
 
     def show_symbols(self):
-        print(f'共检测到 用户自定义标识符和常数 共 {len(self.symbols)} 个')
-        table = PrettyTable(['number', 'name', 'code', 'type'])
+        info = '   Symbol Table'
+        info += f'   共检测到 用户自定义标识符和常数 共 {len(self.symbols)} 个'
+        table = PrettyTable()
+        table.title = info
+        table.field_names = ['number', 'name', 'code', 'type']
         for symbol in self.symbols:
             table.add_row([symbol.number, symbol.name, symbol.code, symbol.type])
         print(table)
 
     def show_unrecognized(self):
-        print(f'共检测到 未知符号 共 {len(self.unrecognized)} 个')
-        table = PrettyTable(['un_index', 'name', 'pos', 'line'])
+        info = '   Unrecognized Chars Table'
+        info += f'   共检测到 未知符号 共 {len(self.unrecognized)} 个'
+        table = PrettyTable()
+        table.title = info
+        table.field_names = ['un_index', 'name', 'pos', 'line']
         for un in self.unrecognized:
             table.add_row([un.un_index, un.name, un.pos, un.line])
         print(table)
 
     def show_all(self):
+        print()
         self.show_tokens()
         print()
         self.show_symbols()
@@ -212,28 +221,5 @@ class Lexer():
         print()
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    def get_word_token(self, word:str):
-        pass
 
 
