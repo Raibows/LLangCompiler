@@ -8,13 +8,13 @@ from Struct import PriorityTable, Equ, Token, Symbol, Code
 
 
 
-class OperatorPrecedenceGrammar():
+class OperatorPrecedenceParser():
     def __init__(self, grammar=None, terminals=None, v_terminals=None, reduction_file_path:str=None, tokens:[Token]=None, symbols:[Symbol]=None):
         if grammar:
             self.grammar = grammar
         else:
             self.grammar = [
-                'A → # S #',
+                'A → # B #',
                 'B → S ; S',
                 'S → var D | nil',
                 'D → L : K ; | L : K ; D',

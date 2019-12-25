@@ -1,5 +1,5 @@
 from LexAnalyzer import Lexer
-from Parser import OperatorPrecedenceGrammar
+from Parser import OperatorPrecedenceParser
 
 
 if __name__ == '__main__':
@@ -7,17 +7,11 @@ if __name__ == '__main__':
     le.scanner()
     le.show_all()
     le.output_formatted_file()
-    state_grammar = [
-        'L → S | S ; L',
-        'S → i := E',
-        'E → '
-    ]
-    terminals = ['#', '(', ')', ';', 'i']
-    v_terminals = ['A', 'S', 'D', 'R', 'P']
 
-    g = OperatorPrecedenceGrammar(symbols=le.get_symbols())
+
+    g = OperatorPrecedenceParser(symbols=le.get_symbols())
     g.set_grammar_FIRSTVT_LASTVT()
     g.set_grammar_priority_table()
     # g.show_all()
-    g.reduction()
+    g.reduction(is_show=True)
 
