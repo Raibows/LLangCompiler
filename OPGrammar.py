@@ -1,12 +1,14 @@
 from Struct import *
 
 
-class Grammar():
-    def __init__(self, production:[], terminals:[], v_terminals:[], grammar_name:str):
-        self.grammar_name = grammar_name
-        self.production = production
-        self.terminals = terminals
-        self.v_terminals = v_terminals
+class OPGrammar():
+    def __init__(self, grammar):
+        self.__grammar = grammar
+        self.start = grammar.start
+        self.grammar_name = grammar.name
+        self.production = grammar.production
+        self.terminals = grammar.terminals
+        self.v_terminals = grammar.v_terminals
         self.sentences = []
         self.FIRSTVT = {}
         self.LASTVT = {}
@@ -21,11 +23,30 @@ class Grammar():
             ]
         '''
         self.__set_sentences()
-        self.__set_FIRSTVT_LASTVT()
-        self.__set_grammar_priority_table()
+        if self.__check_production():
+            print('Info 检查完成！该文法可以使用算符优先算法', self.grammar_name)
+            self.__set_FIRSTVT_LASTVT()
+            self.__set_grammar_priority_table()
+        else:
+            raise RuntimeError('Error this production has like ...QR... format', self.grammar_name)
 
+    def __check_production(self)->bool:  # 算符优先算法不能含有...QR...
+        for line in self.sentences:
+            right = line[1]
+            for one in right:
+                i = 0
+                while i+1 < len(one):
+                    if one[i] in self.v_terminals and one[i+1] in self.v_terminals:
+                        return False
+                    i += 1
+        return True
 
     def __set_sentences(self):
+        # first add A -> # S #
+        self.production.insert(0, f'A -> # {self.start} #')
+        self.terminals.insert(0, '#')
+        self.v_terminals.insert(0, 'A')
+
         for line in self.production:
             sentence = line.split('->')
             sentence[0] = sentence[0].strip()
@@ -36,7 +57,6 @@ class Grammar():
                 for j in range(len(sentence[1][i])):
                     sentence[1][i][j] = sentence[1][i][j].strip()
             self.sentences.append(sentence)
-
 
     def __transfer(self, src:str, dst:str, flag='firstvt'):
         # print('transfer', flag, src, dst)
@@ -54,7 +74,6 @@ class Grammar():
         else:
             raise RuntimeError('Grammar transfer flag is invalid !', flag)
         return change
-
 
     def __set_FIRSTVT_LASTVT(self):
         if not self.sentences:
@@ -132,8 +151,6 @@ class Grammar():
                                 row = self.priority_table.terminal_index[last]
                                 self.priority_table.value_table[row][col] = '>'
 
-
-
     def show_FIRSTVT(self):
         info = self.grammar_name + '的FIRSTVT集合如下所示'
         if self.FIRSTVT:
@@ -186,23 +203,27 @@ class StateGrammar():
     变量说明文法
     '''
     name = '变量说明文法 StateGrammar'
+    start = 'S'
     production = [
-        'A -> # S #',
         'S -> var D | nil',
         'D -> L : K ; | L : K ; S',
         'L -> i , L | i',
         'K -> integer | bool | real',
     ]
-    terminals = ['#', 'var', ':', ';', 'i', ',', 'integer', 'bool', 'real']
-    v_terminals = ['A', 'S', 'D', 'L', 'K']
-    fake_start = 'A'
-    real_start = 'S'
+    terminals = ['var', ':', ';', 'i', ',', 'integer', 'bool', 'real']
+    v_terminals = ['S', 'D', 'L', 'K']
+
 
 class ExpressionGrammar():
     '''
     算式表达式
     '''
     name = '算式表达式 ExpressionGrammar'
+    start = 'E'
     production = [
-
+        'E -> E + T | E - T | T | i',
+        'T -> T * F | T / F | F',
+        'F -> ( E ) | i'
     ]
+    terminals = ['+', '-', 'i', '*', '/', '(', ')']
+    v_terminals = ['E', 'T', 'F']

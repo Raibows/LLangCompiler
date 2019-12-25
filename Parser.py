@@ -1,25 +1,20 @@
 from prettytable import PrettyTable
-from Struct import PriorityTable, Equ, Token, Symbol, Code
-from Grammar import *
+from Struct import *
+from OPGrammar import *
 from LexAnalyzer import *
 
 
 
 
 class OperatorPrecedenceParser():
-    def __init__(self, grammar:Grammar, symbols:[Symbol], tokens:[Token]=None, reduction_file_path:str=None):
+    def __init__(self, grammar:OPGrammar, symbols:[Symbol], tokens:[Token]=None, reduction_file_path:str=None):
         self.grammar = grammar
         if reduction_file_path:
             self.reduction_file_path = reduction_file_path
         else:
-            self.reduction_file_path = 'static/test.reduct'
-
+            self.reduction_file_path = 'static/test-stateG.reduct'
         self.tokens = tokens
         self.symbols = symbols
-
-
-
-
 
 
     def __get_priority_table_index(self, name:str)->int:
@@ -61,6 +56,7 @@ class OperatorPrecedenceParser():
                 file.append(word)
         return file
 
+
     def __check_reduction(self, wait_reduct:[])->str:
         for line in self.grammar.sentences:
             left = line[0]
@@ -95,7 +91,9 @@ class OperatorPrecedenceParser():
                     return left
         raise RuntimeError('Error could not find a appropriate product! Wait reduction phrase is', wait_reduct)
 
-    def reduction(self, is_show=False):
+
+
+    def reduction(self, is_show=False, is_single_reduction=False):
         stack = []
         input_chars = self.__read_reduction_file()
         stack.append('#')
@@ -106,10 +104,16 @@ class OperatorPrecedenceParser():
         table = PrettyTable()
         table.title = 'Reduction Process'
         table.field_names = ['step', 'stack', 'input_chars']
+        if is_single_reduction:
+            print('Info 已开启 归约单非产生式')
+            table.title += '(归约单非产生式, step*)'
         # while input_chars[cursor] != '#':
-        while len(stack) != 2 or stack[1] not in self.grammar.v_terminals:
+        # while (len(stack) != 2 or stack[1] not in self.grammar.v_terminals) or cursor < len(input_chars):
+        while True:
+            if input_chars[cursor] == '#' and len(stack) == 2 and stack[1] in self.grammar.v_terminals:
+                break
             step += 1
-            table.add_row([step, stack.copy(), input_chars[cursor:]])
+            table.add_row([step, stack.copy(), input_chars[cursor:].copy()])
             if stack[top] not in self.grammar.terminals and not self.__is_symbol(stack[top])[0]:
                 j = top - 1
             else:
@@ -119,7 +123,7 @@ class OperatorPrecedenceParser():
                 col = self.__get_priority_table_index(input_chars[cursor])
                 # print(row, col)
                 # print(self.priority_table.value_table[row])
-                # print(self.priority_table.value_table[row][col])
+                # print(self.grammar.priority_table.value_table[row][col])
                 if self.grammar.priority_table.value_table[row][col] == '<' or self.grammar.priority_table.value_table[row][col] == '=': # 移入
                     stack.append(input_chars[cursor])
                     top += 1
@@ -154,15 +158,21 @@ class OperatorPrecedenceParser():
                     raise RuntimeError('Error invalid reduction! stack, input_chars, top, cursor, row, col, relation', stack, input_chars, top, cursor, row, col, relation)
         if stack[top] not in self.grammar.v_terminals or len(stack) != 2:
             raise RuntimeError('Error, input_chars is empty, but stack is invalid, stack is', stack)
-        print('Info 归约完成，归约结果为', stack[top])
+
+        step += 1 # success
         table.add_row([step, stack, input_chars[cursor:]])
+        if is_single_reduction:
+            while stack[top] != self.grammar.start:
+                step += 1
+                reduct_ans = self.__check_reduction(stack[top])
+                if reduct_ans:
+                    stack = stack[:top]
+                    stack.append(reduct_ans)
+                    table.add_row([str(step)+'*', stack.copy(), input_chars[cursor:]])
+
+        print('Info 归约完成，归约结果为', stack[top])
         if is_show:
             print(table)
-
-
-
-
-
 
 
 

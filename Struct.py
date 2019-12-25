@@ -10,7 +10,6 @@ class PriorityTable():
         self.value_table = []
 
 class Token():
-
     def __init__(self, label:int, name:str, code:int, addr:int, type:str):
         self.label = label
         self.name = name
@@ -20,7 +19,6 @@ class Token():
 
 
 class Symbol():
-
     def __init__(self, number:int, name:str, code:int, type:str):
         self.number = number
         self.code = code
@@ -159,7 +157,6 @@ class Code():
         return define_false
 
 
-
 class Equ():
     def __init__(self, op:str, op1:str, op2:str, result:str):
         self.op = op
@@ -169,24 +166,24 @@ class Equ():
 
 
 
-
-
 class TreeNode():
-    def __init__(self, name):
-        self.child = None
-        self.sibling = None
+    def __init__(self, name:str):
+        self.children = []
+        self.parent = None
         self.name = name
-        self.data = None
+        self.offset = -1
 
     def set_child(self, child):
         if not isinstance(child, TreeNode):
             raise RuntimeError('Error in set child! child type must be TreeNode')
-        self.child = child
+        self.children.append(child)
 
-    def set_sibling(self, sibling):
-        if not isinstance(sibling, TreeNode):
+    def set_parent(self, parent):
+        if not isinstance(parent, TreeNode):
             raise RuntimeError('Error in set sibling! sibling type must be TreeNode')
-        self.sibling = sibling
+        self.parent = parent
+
+
 
 
 
