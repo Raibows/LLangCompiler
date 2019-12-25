@@ -16,7 +16,6 @@ class OperatorPrecedenceParser():
         self.tokens = tokens
         self.symbols = symbols
 
-
     def __get_priority_table_index(self, name:str)->int:
         if self.__is_symbol(name)[0]:
             index = self.grammar.priority_table.terminal_index['i']
@@ -56,7 +55,6 @@ class OperatorPrecedenceParser():
                 file.append(word)
         return file
 
-
     def __check_reduction(self, wait_reduct:[])->str:
         for line in self.grammar.sentences:
             left = line[0]
@@ -90,8 +88,6 @@ class OperatorPrecedenceParser():
                 if i == len(one) and j == len(wait_reduct):
                     return left
         raise RuntimeError('Error could not find a appropriate product! Wait reduction phrase is', wait_reduct)
-
-
 
     def reduction(self, is_show=False, is_single_reduction=False):
         stack = []
@@ -155,6 +151,7 @@ class OperatorPrecedenceParser():
 
                 else: # 报错
                     relation = self.grammar.priority_table.value_table[row][col]
+                    print(table)
                     raise RuntimeError('Error invalid reduction! stack, input_chars, top, cursor, row, col, relation', stack, input_chars, top, cursor, row, col, relation)
         if stack[top] not in self.grammar.v_terminals or len(stack) != 2:
             raise RuntimeError('Error, input_chars is empty, but stack is invalid, stack is', stack)
@@ -177,6 +174,6 @@ class OperatorPrecedenceParser():
 
 
 
-class RecursiveDecline():
+class RecursiveDescentParser():
     def __init__(self):
         pass

@@ -197,7 +197,6 @@ class OPGrammar():
 
 
 
-
 class StateGrammar():
     '''
     变量说明文法
@@ -214,6 +213,7 @@ class StateGrammar():
     v_terminals = ['S', 'D', 'L', 'K']
 
 
+
 class ExpressionGrammar():
     '''
     算式表达式
@@ -227,3 +227,21 @@ class ExpressionGrammar():
     ]
     terminals = ['+', '-', 'i', '*', '/', '(', ')']
     v_terminals = ['E', 'T', 'F']
+
+
+
+class BoolGrammar():
+    '''
+    布尔表达式
+    '''
+    name = '布尔表达式 BoolGrammar'
+    start = 'B'
+    production = [
+        'B -> B or B | B and B | not B',
+        'B -> ( B )',
+        'B -> i',
+        'B -> i < i | i <= i | i = i | i <> i | i > i | i >= i'
+    ]
+    terminals = ['or', 'and', 'not', '(', ')', 'i', '<', '<=', '=', '<>', '>', '>=']
+    v_terminals = ['B']
+
