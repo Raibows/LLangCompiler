@@ -1,0 +1,4 @@
+program test
+begin
+i:=( true and false or true ) and not false and false
+end

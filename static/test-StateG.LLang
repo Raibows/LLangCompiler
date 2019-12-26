@@ -1,3 +1,6 @@
+program test
+begin
 var a : integer ;
 var b : bool ;
 var a , b , c : real ;
+end

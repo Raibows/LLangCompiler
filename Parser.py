@@ -8,12 +8,8 @@ from LexAnalyzer import *
 
 
 class OperatorPrecedenceParser():
-    def __init__(self, grammar:OPGrammar, symbols:[Symbol], tokens:[Token]=None, reduction_file_path:str=None):
+    def __init__(self, grammar:OPGrammar, symbols:[Symbol], tokens:[Token]=None):
         self.grammar = grammar
-        if reduction_file_path:
-            self.reduction_file_path = reduction_file_path
-        else:
-            self.reduction_file_path = 'static/test-stateG.reduct'
         self.tokens = tokens
         self.symbols = symbols
 
@@ -39,9 +35,15 @@ class OperatorPrecedenceParser():
                 return (True, token.type)
         return (False, None)
 
-    def __read_reduction_file(self):
-        print('Info 待算符优先文法归约文件为', self.reduction_file_path)
-        with open(self.reduction_file_path, 'r', encoding='utf-8') as file:
+    def __read_tokens(self):
+        file = []
+        for token in self.tokens:
+            file.append(token.name)
+        return file
+
+    def __read_reduction_file(self, reduction_file_path = 'static/test-StateG.LLang'):
+        print('Info 待算符优先文法归约格式化文件为', reduction_file_path)
+        with open(reduction_file_path, 'r', encoding='utf-8') as file:
             temp = file.readlines()
         file = []
         for line in temp:
@@ -91,9 +93,12 @@ class OperatorPrecedenceParser():
                     return left
         raise RuntimeError('Error could not find a appropriate product! Wait reduction phrase is', wait_reduct)
 
-    def reduction(self, is_show=False, is_single_reduction=False):
+    def reduction(self, is_show=False, is_single_reduction=False, reduction_file_path=None):
         stack = []
-        input_chars = self.__read_reduction_file()
+        if reduction_file_path:
+            input_chars = self.__read_reduction_file(reduction_file_path)
+        else:
+            input_chars = self.__read_tokens()
         stack.append('#')
         input_chars.append('#')
         cursor = 0
@@ -190,7 +195,7 @@ class RecursiveDescentParser():
         if reduction_file_path:
             self.reduction_file_path = reduction_file_path
         else:
-            self.reduction_file_path = 'static/test-stateG.reduct'
+            self.reduction_file_path = 'static/test-StateG.LLang'
         self.tokens = tokens
         self.symbols = symbols
         self.input_cursor = 0

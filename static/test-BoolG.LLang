@@ -1,0 +1,4 @@
+program test
+begin
+( a < b and c > d or c > i ) <= a <> c
+end

@@ -6,11 +6,12 @@ from prettytable import PrettyTable
 
 
 class Lexer():
-    def __init__(self):
+    def __init__(self, is_output_formatted=True):
+        self.is_formatted = is_output_formatted
         self.LLang_path = r'static/test.LLang'
         self.target_token_path = ''
         self.target_word_table_path = ''
-        self.target_formatter_file_path = 'static/Lexformatted.reduct'
+        self.target_formatter_file_path = 'static/test-Lexformatted.LLang'
         self.origin_file = []
         self.coder = Code()
         self.tokens = []
@@ -55,7 +56,11 @@ class Lexer():
                     raise RuntimeError('Error line end exits whitespace!', self.origin_file[i])
                 # self.origin_file[i] = self.origin_file[i].replace(' ', '')
 
-    def scanner(self):
+    def scanner(self, LLang_path=None, target_formatted_path=None):
+        if LLang_path:
+            self.LLang_path = LLang_path
+        if target_formatted_path:
+            self.target_formatter_file_path = target_formatted_path
         print('Info 正在词法分析', self.LLang_path)
         self.__formatter()
         if not self.origin_file:
@@ -157,7 +162,12 @@ class Lexer():
                     un_index += 1
                 i += 1
 
-    def output_formatted_file(self):
+        if self.is_formatted:
+            return self.__output_formatted_file()
+        return None
+
+
+    def __output_formatted_file(self):
         file = []
         i = 0
         while i < len(self.tokens):
