@@ -1,4 +1,10 @@
+'''
+定义算符优先文法
+'''
+
+
 from Struct import *
+
 
 
 class OPGrammar():

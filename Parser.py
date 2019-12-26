@@ -1,3 +1,8 @@
+'''
+定义parser
+算符优先算法
+递归下降算法
+'''
 from prettytable import PrettyTable
 from Struct import *
 import random
@@ -17,6 +22,15 @@ class OperatorPrecedenceParser():
         self.__next_label = len(tokens)
         self.__tree_nodes = {}
 
+    def get_tree_root(self):
+        if self.__tree_root:
+            return self.__tree_root
+        raise RuntimeError('Error tree_root is None! Consider parser first!')
+
+    def get_tree_nodes(self):
+        if self.__tree_nodes:
+            return self.__tree_nodes
+        raise RuntimeError('Error tree_nodes dict is None! Consider parser first!')
 
     def __generate_next_node(self, name:str=None, token:Token=None):
         if token:
@@ -115,9 +129,6 @@ class OperatorPrecedenceParser():
                         node.set_parent(parent)
                     return left, parent
         raise RuntimeError('Error could not find a appropriate product! Wait reduction phrase is', wait_reduct)
-
-
-
 
     def reduction(self, is_show=False, is_single_reduction=False, reduction_file_path=None):
         stack = []

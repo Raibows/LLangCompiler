@@ -167,11 +167,12 @@ class Equ():
 
 
 class TreeNode():
-    def __init__(self, name:str=None, token:Token=None, label:int=None):
+    def __init__(self, name:str=None, token:Token=None, label:int=None, pos:int=0):
         if (token or (name and label)) == False:
             raise RuntimeError('Error must give token or label and name!')
 
         self.parent = None
+        self.pos = pos
         if token:
             self.terminal_flag = True
             self.children = None
@@ -191,14 +192,26 @@ class TreeNode():
         if not isinstance(child, TreeNode):
             raise RuntimeError('Error in set child! child type must be TreeNode')
         self.children.append(child)
+        child_pos = len(self.children)
+        child.pos = child_pos - 1
 
     def set_parent(self, parent):
         if not isinstance(parent, TreeNode):
             raise RuntimeError('Error in set sibling! sibling type must be TreeNode')
         self.parent = parent
 
+    def insert_sibling(self, sibling, right_offset:int):
+        if not isinstance(sibling, TreeNode):
+            raise RuntimeError('Error in set child! child type must be TreeNode')
+        if self.parent == None:
+            raise RuntimeError('Error do not has parent, so could not insert sibling of', self)
+        p:TreeNode = self.parent
+        p.children.insert(self.pos+right_offset, sibling)
+        sibling.parent = p
+        sibling.pos = self.pos + right_offset
+
     def __repr__(self):
-        return f'The TreeNode is {self.label}, {self.name}, {self.terminal_flag}, {self.children}, {self.parent}'
+        return f'The TreeNode is {self.label}, {self.name}, {self.terminal_flag}, pos is {self.pos}, Children: {self.children}, Parent: {self.parent}'
 
 
 
@@ -206,7 +219,17 @@ class TreeNode():
 
 
 
+if __name__ == '__main__':
+    t1 = TreeNode('123', label=1)
+    t2 = TreeNode('123', label=2)
+    t3 = TreeNode('123', label=3)
 
+    t1.set_child(t2)
+    # t1.set_child(t3)
+    t2.set_parent(t1)
+    # t3.set_parent(t1)
+    t2.insert_sibling(t3, 1)
+    print(t1)
 
 
 

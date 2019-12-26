@@ -1,3 +1,7 @@
+'''
+定义词法分析器
+'''
+
 from Struct import *
 from prettytable import PrettyTable
 
