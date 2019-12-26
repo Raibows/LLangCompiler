@@ -33,6 +33,7 @@ class OPGrammar():
             print('Info 检查完成！该文法可以使用算符优先算法', self.grammar_name)
             self.__set_FIRSTVT_LASTVT()
             self.__set_grammar_priority_table()
+            self.__convert_sentences_to_dict()
         else:
             raise RuntimeError('Error this production has like ...QR... format', self.grammar_name)
 
@@ -201,6 +202,23 @@ class OPGrammar():
         self.show_priority_table()
         print()
 
+    def __convert_sentences_to_dict(self):
+        '''
+        {
+        0: [W, [#, P, #]],
+        1: ....
+        }
+        '''
+        temp = {}
+        count = 0
+        for sentence in self.sentences:
+            left = sentence[0]
+            right = sentence[1]
+            for one in right:
+                temp[count] = [left, one]
+                count += 1
+        self.sentences = temp
+        # print(self.sentences)
 
 
 
@@ -217,7 +235,7 @@ class MixGrammar():
     def set_default(self):
         self.production = [
             'P -> program i L',
-            'L -> S ; L | S',
+            'L -> L ; S | S',
             'S -> if B then S',
             'S -> if B then L else S',
             'S -> while B do S',

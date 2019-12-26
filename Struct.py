@@ -158,31 +158,47 @@ class Code():
 
 
 class Equ():
-    def __init__(self, op:str, op1:str, op2:str, result:str):
+    def __init__(self, op:int, op1:int, op2:int, result):
+        '''
+        注意op1、op2、result都是
+        '''
         self.op = op
         self.op1 = op1
         self.op2 = op2
         self.result = result
 
+    def __repr__(self):
+        info = f'({self.op}, {self.op1}, {self.op2}, {self.result})'
+        return info
+
 
 
 class TreeNode():
-    def __init__(self, name:str=None, token:Token=None, label:int=None, pos:int=0):
+    def __init__(self, name:str=None, token:Token=None, label:int=None, pos:int=0, action:int=None):
         if (token or (name and label)) == False:
             raise RuntimeError('Error must give token or label and name!')
 
         self.parent = None
         self.pos = pos
-        if token:
+        if token: # terminal
             self.terminal_flag = True
             self.children = None
             self.name = token.name
             self.label = token.label
-        else:
+            self.action = None
+        else: # non-terminal
             self.terminal_flag = False
             self.name = name
             self.label = label
-            self.children = []
+            self.children:[TreeNode] = []
+            if action:
+                self.action = action # record semantic action
+            else:
+                self.action = False # temp node
+            self.attr_t = '_' # true
+            self.attr_f = '_' # false
+            self.attr_q = '_' # quad
+            self.attr_n = '_' # next
 
 
 
@@ -206,15 +222,42 @@ class TreeNode():
         if self.parent == None:
             raise RuntimeError('Error do not has parent, so could not insert sibling of', self)
         p:TreeNode = self.parent
+        self.pos = p.children.index(self) # 先定位自己
         p.children.insert(self.pos+right_offset, sibling)
         sibling.parent = p
-        sibling.pos = self.pos + right_offset
+
+    def get_sibling(self, right_offset:int):
+        p:TreeNode = self.parent
+        self.pos = p.children.index(self)
+        sibling_pos = self.pos + right_offset
+        if sibling_pos < len(p.children):
+            return p.children[sibling_pos]
+        else:
+            return None
 
     def __repr__(self):
-        return f'The TreeNode is {self.label}, {self.name}, {self.terminal_flag}, pos is {self.pos}, Children: {self.children}, Parent: {self.parent}'
+        return f'The TreeNode is {self.label}, {self.name}, {self.terminal_flag}, pos is {self.pos}, action is {self.action}, Children: {self.children}, Parent: {self.parent}'
 
 
 
+
+def convertOP2Code(op:str):
+    table = {}
+    table[':='] = 51
+    table['+'] = 43
+    table['-'] = 45
+    table['*'] = 41
+    table['/'] = 48
+    table['j<'] = 53
+    table['j<='] = 54
+    table['j>'] = 57
+    table['j>='] = 58
+    table['j='] = 56
+    table['j'] = 52
+    table['j<>'] = 55
+    if table.get(op) == None:
+        raise RuntimeError('Error in convertOP2Code invalid OP', op)
+    return table[op]
 
 
 
@@ -228,9 +271,11 @@ if __name__ == '__main__':
     # t1.set_child(t3)
     t2.set_parent(t1)
     # t3.set_parent(t1)
-    t2.insert_sibling(t3, 1)
-    print(t1)
+    t2.insert_sibling(t3, 0)
+    # print(t1)
+    print(t1.children.index(t2), t1.children.index(t3))
 
+    pass
 
 
 

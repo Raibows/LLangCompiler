@@ -32,12 +32,12 @@ class OperatorPrecedenceParser():
             return self.__tree_nodes
         raise RuntimeError('Error tree_nodes dict is None! Consider parser first!')
 
-    def __generate_next_node(self, name:str=None, token:Token=None):
+    def __generate_next_node(self, name:str=None, action:int=None, token:Token=None):
         if token:
             temp = TreeNode(token=token)
             self.__tree_nodes[temp.label] = temp
-        elif name:
-            temp = TreeNode(name=name, label=self.__next_label)
+        elif name and action:
+            temp = TreeNode(name=name, label=self.__next_label, action=action)
             self.__next_label += 1
             self.__tree_nodes[temp.label] = temp
         else:
@@ -90,9 +90,10 @@ class OperatorPrecedenceParser():
         return file
 
     def __check_reduction(self, wait_reduct:[], wait_nodes:[TreeNode]):
-        for line in self.grammar.sentences:
+        sentences:dict = self.grammar.sentences
+        for key, line in sentences.items():
             left = line[0]
-            candidate_right = line[1]
+            candidate_right = [line[1]]
             for one in candidate_right:
                 i = 0
                 j = 0
@@ -121,7 +122,7 @@ class OperatorPrecedenceParser():
                     else:
                         break
                 if i == len(one) and j == len(wait_reduct):
-                    parent = self.__generate_next_node(name=left)
+                    parent = self.__generate_next_node(name=left, action=key)
                     if left == self.grammar.start:
                         self.__tree_root = parent
                     for node in wait_nodes:

@@ -578,6 +578,7 @@ if __name__ == '__main__':
     #
     # for i in range(1):
     #     ll1.analyze()
+    pass
     def aaa():
         return 1, 2
     k, x = aaa()
