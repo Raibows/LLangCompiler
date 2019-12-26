@@ -36,7 +36,33 @@ class LL1:
         #     'B -> i',
         #     'B -> i < i | i <= i | i = i | i <> i | i > i | i >= i'
         # ]
-        self.representation = ['L -> S | S ; L', 'S -> if B then S', 'T -> T * F | T / F | F', 'C -> true | false', 'E -> E + T | E - T | T | i', 'S -> begin L end', 'B -> F | and F', 'F -> ( E ) | i', 'S -> i := E', 'B -> T | or T', 'S -> if B then S else S', 'S -> while B do S', 'F -> ( B ) | not F | C']
+        self.representation = [
+            'P -> program i L',
+            'L -> S ; L | S',
+            'S -> if B then S',
+            'S -> if B then L else S',
+            'S -> while B do S',
+            'S -> begin L end',
+            'S -> var D',
+            # 'S -> nil',
+            'S -> A | A ;',
+            # 'D -> i : K ; | i : K ',
+
+            'D -> H : K ; | H : K ; S',
+            'H -> i , H | i',
+
+            'K -> integer | bool | real',
+            'A -> i := E',
+            'E -> E + T | E - T | T | - E | true | false',
+            'E -> E and E | E or E | E and not E| E or not E',
+            'B -> B or N | N | not B',
+            'T -> T * F | T / F | F',
+            'F -> ( E ) | i',
+            'N -> N and M',
+            'N -> M',
+            'M -> ( B )',
+            'M -> i < i | i > i | i <> i | i <= i | i >= i | i = i'
+        ]
         print('产生式：', self.representation)
 
         self.first_state = self.representation[0].split(' -> ')[0]
@@ -420,16 +446,33 @@ class LL1:
         print(df_table)
 
 
-    def analyze(self):
+    def analyze(self, file_path=None):
         """
         对用户输入语句进行语法分析
         :return:
         """
-        input_str = input("请输入：")
-        # input_str = '( ( id + id ) * id id'
-        input_str += ' $'
+        if file_path:
+            with open(file_path, 'r', encoding='utf-8') as file:
+                with open(file_path, 'r', encoding='utf-8') as file:
+                    temp = file.readlines()
+                file = []
+                for line in temp:
+                    line = line.strip('\n')
+                    line = line.strip('\r')
+                    line = line.strip('\t')
+                    line = line.strip(' ')
+                    line = line.split(' ')
+                    for word in line:
+                        if word not in self.VT and word not in self.VN:
+                            raise RuntimeError('Error reduction file has unknown chars!', word)
+                        file.append(word)
+            input_str = file
+        else:
+            input_str = input("请输入：")
+            # input_str = '( ( id + id ) * id id'
+            input_str += ' $'
 
-        input_str = input_str.split(' ')
+            input_str = input_str.split(' ')
 
         # 判断是否输入正确
         for i in input_str:
@@ -533,5 +576,5 @@ if __name__ == '__main__':
 
     ll1.get_tabel()
 
-    for i in range(10):
+    for i in range(1):
         ll1.analyze()

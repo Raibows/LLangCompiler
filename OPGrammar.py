@@ -8,7 +8,7 @@ class OPGrammar():
         self.grammar_name = grammar.name
         self.production = grammar.production
         self.terminals = grammar.terminals
-        self.v_terminals = grammar.v_terminals
+        self.non_terminals = grammar.non_terminals
         self.sentences = []
         self.FIRSTVT = {}
         self.LASTVT = {}
@@ -36,7 +36,7 @@ class OPGrammar():
             for one in right:
                 i = 0
                 while i+1 < len(one):
-                    if one[i] in self.v_terminals and one[i+1] in self.v_terminals:
+                    if one[i] in self.non_terminals and one[i + 1] in self.non_terminals:
                         return False
                     i += 1
         return True
@@ -45,7 +45,7 @@ class OPGrammar():
         # first add A -> # S #
         self.production.insert(0, f'W -> # {self.start} #')
         self.terminals.insert(0, '#')
-        self.v_terminals.insert(0, 'W')
+        self.non_terminals.insert(0, 'W')
 
         for line in self.production:
             sentence = line.split('->')
@@ -79,7 +79,7 @@ class OPGrammar():
         if not self.sentences:
             self.__set_sentences()
         if (not self.FIRSTVT) or (not self.LASTVT):
-            for v in self.v_terminals:
+            for v in self.non_terminals:
                 self.FIRSTVT[v] = []
                 self.LASTVT[v] = []
         while True:
@@ -90,7 +90,7 @@ class OPGrammar():
                     if ch in self.terminals and ch not in self.FIRSTVT[line[0]]: # A -> a..
                         self.FIRSTVT[line[0]].append(ch)
                         change_flag = True
-                    elif ch in self.v_terminals: # 'A -> Q...'
+                    elif ch in self.non_terminals: # 'A -> Q...'
                         if len(one) > 1:  # A -> Qa..
                             if one[1] in self.terminals and one[1] not in self.FIRSTVT[line[0]]:
                                 self.FIRSTVT[line[0]].append(one[1])
@@ -102,7 +102,7 @@ class OPGrammar():
                         self.LASTVT[line[0]].append(ch)
                         change_flag = True
 
-                    elif ch in self.v_terminals: # A -> ...Q
+                    elif ch in self.non_terminals: # A -> ...Q
                         if len(one) > 1: # A -> ...aQ
                             if one[-2] in self.terminals and one[-2] not in self.LASTVT[line[0]]:
                                 self.LASTVT[line[0]].append(one[-2])
@@ -133,18 +133,18 @@ class OPGrammar():
                             col = self.priority_table.terminal_index[one[i+1]]
                             self.priority_table.value_table[row][col] = '='
 
-                        if i+2 < one_len and one[i+1] in self.v_terminals and one[i+2] in self.terminals: # one[i] = one[i+2]
+                        if i+2 < one_len and one[i+1] in self.non_terminals and one[i + 2] in self.terminals: # one[i] = one[i+2]
                             row = self.priority_table.terminal_index[one[i]]
                             col = self.priority_table.terminal_index[one[i+2]]
                             self.priority_table.value_table[row][col] = '='
 
-                        if i+1 < one_len and one[i+1] in self.v_terminals: # ...aP... a < FIRSTVT(p)
+                        if i+1 < one_len and one[i+1] in self.non_terminals: # ...aP... a < FIRSTVT(p)
                             row = self.priority_table.terminal_index[one[i]]
                             for first in self.FIRSTVT[one[i + 1]]:
                                 col = self.priority_table.terminal_index[first]
                                 self.priority_table.value_table[row][col] = '<'
 
-                    elif one[i] in self.v_terminals: # one[i] is von terminals
+                    elif one[i] in self.non_terminals: # one[i] is von terminals
                         if i+1 < one_len and one[i+1] in self.terminals: # ...pa.... LASTVT(P) > a
                             col = self.priority_table.terminal_index[one[i+1]]
                             for last in self.LASTVT[one[i]]:
@@ -206,7 +206,7 @@ class MixGrammar():
     start = 'P'
     production = []
     terminals = []
-    v_terminals = []
+    non_terminals = []
 
     def set_default(self):
         self.production = [
@@ -236,7 +236,7 @@ class MixGrammar():
             'M -> ( B )',
             'M -> i < i | i > i | i <> i | i <= i | i >= i | i = i'
         ]
-        self.v_terminals = ['P', 'L', 'S', 'D', 'K', 'A', 'E', 'B', 'T', 'F', 'N', 'M', 'H']
+        self.non_terminals = ['P', 'L', 'S', 'D', 'K', 'A', 'E', 'B', 'T', 'F', 'N', 'M', 'H']
         self.terminals = ['program', 'i', ';', 'if', 'then', 'else', 'while', 'do', 'begin', 'end', 'var', ':', ':=',
                           'integer', 'bool', 'real', '+', '-', '*', '/', 'or', 'and', 'not', '(', ')',
                           '<', '>', '<>', '=', '<=', '>=', ',', 'true', 'false']
@@ -248,13 +248,13 @@ class MixGrammar():
         for g in args:
             p += g.production
             t += g.terminals
-            vt += g.v_terminals
+            vt += g.non_terminals
         p = list(set(p))
         t = list(set(t))
         vt = list(set(vt))
         self.production = p
         self.terminals = t
-        self.v_terminals = vt
+        self.non_terminals = vt
         # print(p)
         # print(t)
         # print(vt)
@@ -277,7 +277,7 @@ class StateGrammar():
         'K -> integer | bool | real',
     ]
     terminals = ['var', ':', ';', 'i', ',', 'integer', 'bool', 'real']
-    v_terminals = ['S', 'D', 'L', 'K']
+    non_terminals = ['S', 'D', 'L', 'K']
 
 
 
@@ -293,7 +293,7 @@ class ExpressionGrammar():
         'F -> ( E ) | i'
     ]
     terminals = ['+', '-', 'i', '*', '/', '(', ')']
-    v_terminals = ['E', 'T', 'F']
+    non_terminals = ['E', 'T', 'F']
 
 
 
@@ -311,7 +311,7 @@ class BoolGrammar():
         'B -> true | false'
     ]
     terminals = ['or', 'and', 'not', '(', ')', 'i', '<', '<=', '=', '<>', '>', '>=', 'true', 'false']
-    v_terminals = ['B']
+    non_terminals = ['B']
 
 
 """
@@ -325,5 +325,5 @@ class BoolGrammar():
         'C -> true | false'
     ]
     terminals = ['or', 'and', '(', ')', 'not', 'true', 'false']
-    v_terminals = ['B', 'T', 'F', 'C']
+    non_terminals = ['B', 'T', 'F', 'C']
 """

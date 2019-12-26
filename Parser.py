@@ -53,7 +53,7 @@ class OperatorPrecedenceParser():
             line = line.strip(' ')
             line = line.split(' ')
             for word in line:
-                if word not in self.grammar.terminals and word not in self.grammar.v_terminals and not self.__is_symbol(word)[0]:
+                if word not in self.grammar.terminals and word not in self.grammar.non_terminals and not self.__is_symbol(word)[0]:
                     raise RuntimeError('Error reduction file has unknown chars!', word)
                 file.append(word)
         return file
@@ -66,8 +66,8 @@ class OperatorPrecedenceParser():
                 i = 0
                 j = 0
                 while i < len(one) and j < len(wait_reduct):
-                    if one[i] in self.grammar.v_terminals:
-                        if wait_reduct[j] in self.grammar.v_terminals:
+                    if one[i] in self.grammar.non_terminals:
+                        if wait_reduct[j] in self.grammar.non_terminals:
                             i += 1
                             j += 1
                         else:
@@ -111,9 +111,9 @@ class OperatorPrecedenceParser():
             print('Info 已开启 归约单非产生式')
             table.title += '(归约单非产生式, step*)'
         # while input_chars[cursor] != '#':
-        # while (len(stack) != 2 or stack[1] not in self.grammar.v_terminals) or cursor < len(input_chars):
+        # while (len(stack) != 2 or stack[1] not in self.grammar.non_terminals) or cursor < len(input_chars):
         while True:
-            if input_chars[cursor] == '#' and len(stack) == 2 and stack[1] in self.grammar.v_terminals:
+            if input_chars[cursor] == '#' and len(stack) == 2 and stack[1] in self.grammar.non_terminals:
                 break
             step += 1
             table.add_row([step, stack.copy(), input_chars[cursor:].copy()])
@@ -168,7 +168,7 @@ class OperatorPrecedenceParser():
                     # print(stack)
                     # print(input_chars[cursor:])
                     raise RuntimeError('Error invalid reduction! Could not find a precedence, stack, input_chars', stack, '\n\r', input_chars[cursor:])
-        if stack[top] not in self.grammar.v_terminals or len(stack) != 2:
+        if stack[top] not in self.grammar.non_terminals or len(stack) != 2:
             raise RuntimeError('Error, input_chars is empty, but stack is invalid, stack is', stack)
 
         step += 1 # success

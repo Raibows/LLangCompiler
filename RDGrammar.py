@@ -22,5 +22,5 @@ class MainGrammar():
         'S -> while B do S',
         'S -> begin L end'
     ]
-    v_terminals = ['L', 'S', 'E', 'B']
+    non_terminals = ['L', 'S', 'E', 'B']
     terminals = [';', ':=', 'if', 'then', 'else', 'while', 'do', 'begin', 'end', 'i']
