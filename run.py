@@ -9,10 +9,10 @@ from RDGrammar import *
 
 
 if __name__ == '__main__':
-    # reduct_test_file = r'static/test.LLang'
+    reduct_test_file = r'static/test.LLang'
     # reduct_test_file = r'static/test-StateG.LLang'
     # reduct_test_file = r'static/test-BoolG2.LLang'
-    reduct_test_file = r'static/test2.LLang'
+    # reduct_test_file = r'static/test2.LLang'
 
 
 

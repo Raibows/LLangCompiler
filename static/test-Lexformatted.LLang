@@ -4,4 +4,8 @@ a := 2 ;
 i := a * 3.14 ; 
 b := i ; 
 if a > b then a := a + i ; 
-while a <> b do i := b * i end 
+while a <> b do i := b * i ; 
+var k : bool ; 
+k := false ; 
+if k then a := a + 1 ; 
+end 

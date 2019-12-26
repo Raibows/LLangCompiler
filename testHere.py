@@ -561,20 +561,24 @@ class LL1:
 
 if __name__ == '__main__':
     pass
-    ll1 = LL1()
-    ll1.get_representation()
-
-    ll1.is_recursion()
-
-    ll1.out_VT_VN()
-
-    ll1.get_first()
-    ll1.get_follow()
-    ll1.get_select()
-
-    ll1.is_ll1()
-
-    ll1.get_tabel()
-
-    for i in range(1):
-        ll1.analyze()
+    # ll1 = LL1()
+    # ll1.get_representation()
+    #
+    # ll1.is_recursion()
+    #
+    # ll1.out_VT_VN()
+    #
+    # ll1.get_first()
+    # ll1.get_follow()
+    # ll1.get_select()
+    #
+    # ll1.is_ll1()
+    #
+    # ll1.get_tabel()
+    #
+    # for i in range(1):
+    #     ll1.analyze()
+    def aaa():
+        return 1, 2
+    k, x = aaa()
+    print(k, x)

@@ -8,10 +8,27 @@ from LexAnalyzer import *
 
 
 class OperatorPrecedenceParser():
+
     def __init__(self, grammar:OPGrammar, symbols:[Symbol], tokens:[Token]=None):
         self.grammar = grammar
         self.tokens = tokens
         self.symbols = symbols
+        self.__tree_root = None
+        self.__next_label = len(tokens)
+        self.__tree_nodes = {}
+
+
+    def __generate_next_node(self, name:str=None, token:Token=None):
+        if token:
+            temp = TreeNode(token=token)
+            self.__tree_nodes[temp.label] = temp
+        elif name:
+            temp = TreeNode(name=name, label=self.__next_label)
+            self.__next_label += 1
+            self.__tree_nodes[temp.label] = temp
+        else:
+            raise RuntimeError('Error in generate_next_node, must give token or name!')
+        return temp
 
     def __get_priority_table_index(self, name:str)->int:
         if self.__is_symbol(name)[0]:
@@ -58,7 +75,7 @@ class OperatorPrecedenceParser():
                 file.append(word)
         return file
 
-    def __check_reduction(self, wait_reduct:[])->str:
+    def __check_reduction(self, wait_reduct:[], wait_nodes:[TreeNode]):
         for line in self.grammar.sentences:
             left = line[0]
             candidate_right = line[1]
@@ -90,16 +107,27 @@ class OperatorPrecedenceParser():
                     else:
                         break
                 if i == len(one) and j == len(wait_reduct):
-                    return left
+                    parent = self.__generate_next_node(name=left)
+                    if left == self.grammar.start:
+                        self.__tree_root = parent
+                    for node in wait_nodes:
+                        parent.set_child(node)
+                        node.set_parent(parent)
+                    return left, parent
         raise RuntimeError('Error could not find a appropriate product! Wait reduction phrase is', wait_reduct)
+
+
+
 
     def reduction(self, is_show=False, is_single_reduction=False, reduction_file_path=None):
         stack = []
+        stack_tree_nodes = []
         if reduction_file_path:
             input_chars = self.__read_reduction_file(reduction_file_path)
         else:
             input_chars = self.__read_tokens()
         stack.append('#')
+        stack_tree_nodes.append('#')
         input_chars.append('#')
         cursor = 0
         top = 0 # stack_top
@@ -129,6 +157,7 @@ class OperatorPrecedenceParser():
                 # print(self.grammar.priority_table.value_table[row][col])
                 if self.grammar.priority_table.value_table[row][col] == '<' or self.grammar.priority_table.value_table[row][col] == '=': # 移入
                     stack.append(input_chars[cursor])
+                    stack_tree_nodes.append(self.__generate_next_node(token=self.tokens[cursor])) #增加TreeNode
                     top += 1
                     cursor += 1
                     break
@@ -148,16 +177,24 @@ class OperatorPrecedenceParser():
                             break
                     # reduct from stack[j+1] to stack[top]
                     wait_reduction = stack[j+1:]
-                    reduct_ans = self.__check_reduction(wait_reduction)
+                    wait_reduction_tree_nodes = stack_tree_nodes[j+1:]
+                    reduct_ans, reduct_ans_node = self.__check_reduction(wait_reduction, wait_reduction_tree_nodes)
                     # print('ruduct ans', reduct_ans)
-                    if reduct_ans:
+                    if reduct_ans and reduct_ans_node:
                         stack = stack[:j+1]
+                        stack_tree_nodes = stack_tree_nodes[:j+1]
                         stack.append(reduct_ans)
+                        stack_tree_nodes.append(reduct_ans_node)
                         top = j+1
                         break
                 elif 'nil' in stack:
+                    count = 0
                     stack.remove('nil')
-                    top -= 1
+                    for i in range(len(stack_tree_nodes)):
+                        if stack_tree_nodes[i].name == 'nil':
+                            stack_tree_nodes.pop(i)
+                            count += 1
+                    top -= count
                     break
 
                 else: # 报错
@@ -183,6 +220,7 @@ class OperatorPrecedenceParser():
                     table.add_row([str(step)+'*', stack.copy(), input_chars[cursor:]])
 
         print('Info 归约完成，归约结果为', stack[top])
+        # print(self.__tree_root)
         if is_show:
             print(table)
 

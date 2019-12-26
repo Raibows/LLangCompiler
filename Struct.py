@@ -167,13 +167,27 @@ class Equ():
 
 
 class TreeNode():
-    def __init__(self, label:str):
-        self.children = []
+    def __init__(self, name:str=None, token:Token=None, label:int=None):
+        if (token or (name and label)) == False:
+            raise RuntimeError('Error must give token or label and name!')
+
         self.parent = None
-        self.label = label
-        self.offset = -1
+        if token:
+            self.terminal_flag = True
+            self.children = None
+            self.name = token.name
+            self.label = token.label
+        else:
+            self.terminal_flag = False
+            self.name = name
+            self.label = label
+            self.children = []
+
+
 
     def set_child(self, child):
+        if self.terminal_flag:
+            raise RuntimeError('Error terminal TreeNode could not set child!')
         if not isinstance(child, TreeNode):
             raise RuntimeError('Error in set child! child type must be TreeNode')
         self.children.append(child)
@@ -183,6 +197,8 @@ class TreeNode():
             raise RuntimeError('Error in set sibling! sibling type must be TreeNode')
         self.parent = parent
 
+    def __repr__(self):
+        return f'The TreeNode is {self.label}, {self.name}, {self.terminal_flag}, {self.children}, {self.parent}'
 
 
 
