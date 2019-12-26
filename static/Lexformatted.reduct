@@ -1,0 +1,8 @@
+program test begin var a : integer ; 
+var i , b : real ; 
+a := 2 ; 
+i := a * 3.14 ; 
+b := i ; 
+if a > b then a := a + i ; 
+while a <> b do i := b * i ; 
+end 

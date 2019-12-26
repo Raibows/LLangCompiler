@@ -1,5 +1,6 @@
 from prettytable import PrettyTable
 from Struct import *
+import random
 from OPGrammar import *
 from LexAnalyzer import *
 
@@ -75,10 +76,11 @@ class OperatorPrecedenceParser():
                             j += 1
                         elif one[i] == 'i':
                             judge = self.__is_symbol(wait_reduct[j])
-                            if judge[0] and judge[1] == Code.TAG: # a\b\c\... == i
+                            if judge[0]: # a\b\c\... == i
+                                if judge[1] == Code.TAG or judge[1] == Code.REAL or judge[1] == Code.INT:
                                 # print(judge)
-                                i += 1
-                                j += 1
+                                    i += 1
+                                    j += 1
                             else:
                                 break
                         else:
@@ -148,11 +150,19 @@ class OperatorPrecedenceParser():
                         stack.append(reduct_ans)
                         top = j+1
                         break
+                elif 'nil' in stack:
+                    stack.remove('nil')
+                    top -= 1
+                    break
 
                 else: # 报错
-                    relation = self.grammar.priority_table.value_table[row][col]
+                    step += 1
+                    table.add_row([step, stack.copy(), input_chars[cursor:].copy()])
                     print(table)
-                    raise RuntimeError('Error invalid reduction! stack, input_chars, top, cursor, row, col, relation', stack, input_chars, top, cursor, row, col, relation)
+                    # relation = self.grammar.priority_table.value_table[row][col]
+                    # print(stack)
+                    # print(input_chars[cursor:])
+                    raise RuntimeError('Error invalid reduction! Could not find a precedence, stack, input_chars', stack, '\n\r', input_chars[cursor:])
         if stack[top] not in self.grammar.v_terminals or len(stack) != 2:
             raise RuntimeError('Error, input_chars is empty, but stack is invalid, stack is', stack)
 
@@ -175,5 +185,17 @@ class OperatorPrecedenceParser():
 
 
 class RecursiveDescentParser():
-    def __init__(self):
-        pass
+    def __init__(self, grammar: OPGrammar, symbols: [Symbol], tokens: [Token] = None, reduction_file_path: str = None):
+        self.grammar = grammar
+        if reduction_file_path:
+            self.reduction_file_path = reduction_file_path
+        else:
+            self.reduction_file_path = 'static/test-stateG.reduct'
+        self.tokens = tokens
+        self.symbols = symbols
+        self.input_cursor = 0
+
+    def L_begin(self, next_char:str):
+        if next_char == 'S':
+            pass
+

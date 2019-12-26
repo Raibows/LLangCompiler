@@ -10,7 +10,7 @@ class Lexer():
         self.LLang_path = r'static/test.LLang'
         self.target_token_path = ''
         self.target_word_table_path = ''
-        self.target_formatter_file_path = 'static/rductLang.reduct'
+        self.target_formatter_file_path = 'static/Lexformatted.reduct'
         self.origin_file = []
         self.coder = Code()
         self.tokens = []
@@ -162,7 +162,7 @@ class Lexer():
         i = 0
         while i < len(self.tokens):
             line = []
-            if self.tokens[i].label < 2:
+            if self.tokens[i].label < 2 and False:
                 i += 1
                 continue
             else:
@@ -179,6 +179,7 @@ class Lexer():
                 writer.writelines(line)
                 writer.writelines('\n')
         print('Info 已经输出格式化LLang代码到', self.target_formatter_file_path)
+        return self.target_formatter_file_path
 
 
     def show_tokens(self):

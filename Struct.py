@@ -167,10 +167,10 @@ class Equ():
 
 
 class TreeNode():
-    def __init__(self, name:str):
+    def __init__(self, label:str):
         self.children = []
         self.parent = None
-        self.name = name
+        self.label = label
         self.offset = -1
 
     def set_child(self, child):

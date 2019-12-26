@@ -1,25 +1,13 @@
 ﻿program test
-var a,b,c,d,e,f,g:integer&;
-h:real;
-i:bool;
 begin
-   c:=a+b;
-   d:=a-b;
-   e:=a*b;
-   f:=a/b;
-   if c>=d
-    then $
-     c:=2.12D4;
-	else
-	 c:=2a56
-	 ;
-   while e<>f
-    do
-	  e:=e-1;
-	  f:=f+1
-	  ;
-	begin
-	  h:=2.4.56;
-	  i:=false;
-	end;
+var a:integer;
+var i, b : real;&
+a :=2;
+i:=a*3.14Bs2;
+b := i;
+if a > b then a := a + i;
+while a <> b do i := b*i;
+var k : bool;
+k := false;
+if k then a := a + 1;
 end

@@ -43,9 +43,9 @@ class OPGrammar():
 
     def __set_sentences(self):
         # first add A -> # S #
-        self.production.insert(0, f'A -> # {self.start} #')
+        self.production.insert(0, f'W -> # {self.start} #')
         self.terminals.insert(0, '#')
-        self.v_terminals.insert(0, 'A')
+        self.v_terminals.insert(0, 'W')
 
         for line in self.production:
             sentence = line.split('->')
@@ -204,7 +204,8 @@ class StateGrammar():
     name = '变量说明文法 StateGrammar'
     start = 'S'
     production = [
-        'S -> var D | nil',
+        # 'S -> var D | nil',
+        'S -> var D',
         'D -> L : K ; | L : K ; S',
         'L -> i , L | i',
         'K -> integer | bool | real',
@@ -240,8 +241,23 @@ class BoolGrammar():
         'B -> B or B | B and B | not B',
         'B -> ( B )',
         'B -> i',
-        'B -> i < i | i <= i | i = i | i <> i | i > i | i >= i'
+        'B -> i < i | i <= i | i = i | i <> i | i > i | i >= i',
+        'B -> true | false'
     ]
-    terminals = ['or', 'and', 'not', '(', ')', 'i', '<', '<=', '=', '<>', '>', '>=']
+    terminals = ['or', 'and', 'not', '(', ')', 'i', '<', '<=', '=', '<>', '>', '>=', 'true', 'false']
     v_terminals = ['B']
 
+
+"""
+class BoolGrammar():
+    name = 'BoolGrammar'
+    start = 'B'
+    production = [
+        'B -> T | or T',
+        'B -> F | and F',
+        'F -> ( B ) | not F | C',
+        'C -> true | false'
+    ]
+    terminals = ['or', 'and', '(', ')', 'not', 'true', 'false']
+    v_terminals = ['B', 'T', 'F', 'C']
+"""
