@@ -21,21 +21,21 @@ if __name__ == '__main__':
 
     # 自动求算符优先关系表
     OPG = OPGrammar(MixG)
-    # OPG.show_all()
+    OPG.show_all()
 
     # 词法分析器
     Lex = Lexer(is_output_formatted=True)
     Lex.scanner(LLang_path=reduct_test_file)
-    # Lex.show_all()
+    Lex.show_all()
 
     # 语法分析器
     Parser = OperatorPrecedenceParser(grammar=OPG, symbols=Lex.get_symbols(), tokens=Lex.get_tokens())
-    Parser.reduction(is_show=False)
+    Parser.reduction(is_show=True)
 
     # 语义分析器
     Sem = Semantic(tree_root=Parser.get_tree_root(), tree_nodes=Parser.get_tree_nodes(),
                         grammar=OPG, tokens=Parser.tokens, symbols=Parser.symbols)
-    Sem.analyzer_semantic(is_show_emit=False)
+    Sem.analyzer_semantic(is_show_emit=True)
 
 
 

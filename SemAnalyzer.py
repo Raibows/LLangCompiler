@@ -232,7 +232,9 @@ class Semantic():
     def __generate_temp_node(self, name='U'):
         label = self.__get_next_label()
         name += str(label)
-        return TreeNode(name=name, label=label)
+        temp = TreeNode(name=name, label=label)
+        temp.attr_q = self.__get_next_quad()
+        return temp
 
 
 
