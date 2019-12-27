@@ -25,10 +25,10 @@ class Semantic():
 
 
     def analyzer_semantic(self, is_show_emit=True):
-        print('正在语义分析，产生四元式！')
+        print('Info 正在语义分析，产生四元式！')
         self.__dfs(self.root)
         if is_show_emit:
-            print('四元式结果如下')
+            print('Info 四元式结果如下')
             for emit in self.__emit_list:
                 print(emit)
 

@@ -283,7 +283,7 @@ class MixGrammar():
         # print(t)
         # print(vt)
         names = [ _.name for _ in args]
-        print(names, '已经合并完毕')
+        print('Info', names, '已经合并完毕')
 
 
 

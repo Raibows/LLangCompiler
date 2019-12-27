@@ -26,7 +26,7 @@ if __name__ == '__main__':
     # 词法分析器
     Lex = Lexer(is_output_formatted=True)
     Lex.scanner(LLang_path=reduct_test_file)
-    Lex.show_all()
+    # Lex.show_all()
 
     # 语法分析器
     Parser = OperatorPrecedenceParser(grammar=OPG, symbols=Lex.get_symbols(), tokens=Lex.get_tokens())
@@ -35,7 +35,7 @@ if __name__ == '__main__':
     # 语义分析器
     Sem = Semantic(tree_root=Parser.get_tree_root(), tree_nodes=Parser.get_tree_nodes(),
                         grammar=OPG, tokens=Parser.tokens, symbols=Parser.symbols)
-    Sem.analyzer_semantic(is_show_emit=True)
+    Sem.analyzer_semantic(is_show_emit=False)
 
 
 
