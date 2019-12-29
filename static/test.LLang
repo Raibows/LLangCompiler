@@ -2,8 +2,9 @@
 begin
 var a:integer;
 var i, b : real;&
-a :=2;
+a :=2.27.36;
 i:=a*3.14Bs2;
+b := 1Bsd32;
 b := i;
 if a > b then a := a + i;
 while a <> b do i := b*i;
