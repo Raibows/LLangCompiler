@@ -3,7 +3,7 @@ This is a tiny nonofficial Compiler used Operator Precedence Parser for **LLang*
 >My work referenced ChiZuo's work in https://github.com/Raibows/LLangCompiler
 
 #### Introduction 
-1. The strict difinition of LLang could be seen in `./LLangGrammar.paf`  
+1. The strict difinition of LLang could be seen in `./LLangGrammar.pdf`  
 2. Attention, this compiler did not follow the strict difinition of LLang. Code examples are in `./static/`  
 3. My compiler has 4 main modules
     - OPGrammar（define the grammar rule）
@@ -20,5 +20,27 @@ This is a tiny nonofficial Compiler used Operator Precedence Parser for **LLang*
     | version2 | yes | yes | yes | no, need to correct semantic action |
 
 #### Guidance
+1. A common example code of my implementation of LLang is below
+    ```
+    program test
+    begin
+    var a:integer;
+    var i, b : real;&
+    a :=2.27.36;
+    i:=a*3.14Bs2;
+    b := 1Bsd32;
+    b := i;
+    if a > b then a := a + i;
+    while a <> b do i := b*i;
+    var k : bool;
+    k := false;
+    if k then a := a + 1;
+    end
+    ```
+2. To run this Compiler
+   ```
+   Edit run.py as you like
+   python run.py
+   ```
 
     
