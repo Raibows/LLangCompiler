@@ -13,7 +13,7 @@ This is a tiny nonofficial Compiler used Operator Precedence Parser for **LLang*
 4. branch information  
     The following 4 versions are recommended
     |  Branch | OPGrammar  | Lexer  |  Parser | Semantic  |
-    | :------------: | :------------: | :------------: | :------------: | :------------: |
+    | ------------ | ------------ | ------------ | ------------ | ------------ |
     | master  | yes  | yes  | yes, no support `if..the..else..` and `TreeNode` | no  |
     |  tree | yes  | yes  |  yes, no support `if..the..else..` |  no |
     |  version1 |  yes | yes  |  yes, no support `if..the..else..` |  yes, need to perfect |
