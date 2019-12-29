@@ -12,12 +12,24 @@ This is a tiny nonofficial Compiler used Operator Precedence Parser for **LLang*
     - SemanticAnalyzer（unfinished）
 4. branch information  
     The following 4 versions are recommended
-    |  Branch | OPGrammar  | Lexer  |  Parser | Semantic  |
-    | ------------ | ------------ | ------------ | ------------ | ------------ |
-    | master  | yes  | yes  | yes, no support `if..the..else..` and `TreeNode` | no  |
-    |  tree | yes  | yes  |  yes, no support `if..the..else..` |  no |
-    |  version1 |  yes | yes  |  yes, no support `if..the..else..` |  yes, need to perfect |
-    | version2 | yes | yes | yes | no, need to correct semantic action |
+    <table>
+    <thead>
+    <tr><th>Branch</th><th>OPGrammar</th><th>Lexer</th><th>Parser</th><th>Semantic</th></tr></thead>
+    <tbody>
+    <tr>
+    <td>master</td><td>yes</td><td>yes</td><td>yes, no support `if..the..else..` and `TreeNode`</td><td>no</td>
+    </tr>
+    <tr>
+    <td>tree</td><td>yes</td><td>yes</td><td>yes, no support if..the..else..</td><td>no</td>
+    </tr>
+    <tr>
+    <td>version1</td><td>yes</td><td>yes</td><td>yes, no support if..the..else..</td><td>no, need to perfect</td>
+    </tr>
+    <tr>
+    <td>version2</td><td>yes</td><td>yes</td><td>yes, no support if..the..else..</td><td>no, need to correct semantic action</td>
+    </tr>
+    </tbody>
+    </table>
 
 #### Guidance
 1. A common example code of my implementation of LLang is below
