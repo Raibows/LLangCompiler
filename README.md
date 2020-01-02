@@ -23,10 +23,10 @@ This is a tiny nonofficial Compiler used Operator Precedence Parser for **LLang*
     <td>tree</td><td>yes</td><td>yes</td><td>yes, no support if..the..else..</td><td>no</td>
     </tr>
     <tr>
-    <td>version1</td><td>yes</td><td>yes</td><td>yes, no support if..the..else..</td><td>no, need to perfect</td>
+    <td>version1</td><td>yes</td><td>yes</td><td>yes, no support if..then..else..</td><td>yes, need to perfect</td>
     </tr>
     <tr>
-    <td>version2</td><td>yes</td><td>yes</td><td>yes, no support if..the..else..</td><td>no, need to correct semantic action</td>
+    <td>version2</td><td>yes</td><td>yes</td><td>yes </td><td>no, need to correct semantic action</td>
     </tr>
     </tbody>
     </table>
